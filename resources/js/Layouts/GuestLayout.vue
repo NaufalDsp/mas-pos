@@ -1,27 +1,29 @@
 <template>
-    <div class="min-h-screen flex bg-gray-100">
-      <!-- Bagian kiri -->
-      <div class="hidden lg:flex w-1/2 bg-blue-600 items-center justify-center p-10 text-white">
-        <div class="max-w-md text-center">
-          <!-- Gambar Mockup -->
-          <img src="/images/mockup.png" alt="POS Mockup" class="rounded-xl shadow-lg mb-6">
-          <h2 class="text-lg font-semibold mb-2">Desain yang user-friendly membuat</h2>
-          <p class="text-sm">
-            navigasi cepat dan mudah, bahkan bagi pemula.
-          </p>
+  <div class="min-h-screen overflow-x-hidden overflow-y-auto flex bg-[#EDF0F2] font-sans">
+    <!-- Bagian kiri -->
+    <div class="hidden lg:flex w-1/2 items-center justify-center p-10">
+      <div
+        class="w-full max-w-[794px] self-stretch rounded-[40px] bg-[radial-gradient(84.13%_85.95%_at_26.18%_17.42%,_#4288F2_0%,_#113E82_100%)] text-white grid grid-rows-[auto_1fr] p-10 overflow-hidden">
+        <!-- Gambar Mockup: mentok pojok kiri-atas, tetap dalam kotak -->
+        <div class="row-start-1 justify-self-start self-start -mt-10 -ml-10">
+          <img src="/mockup.png" alt="POS Mockup" class="w-[560px] h-auto pointer-events-none select-none" />
         </div>
-      </div>
-  
-      <!-- Bagian kanan -->
-      <div class="flex flex-col w-full lg:w-1/2 bg-white justify-center px-8">
-        <div class="max-w-md w-full mx-auto">
-          <!-- Logo -->
-          <h1 class="text-2xl font-bold text-blue-600 mb-6 text-right">MASPOS</h1>
-  
-          <!-- Slot untuk konten halaman (Login.vue) -->
-          <slot />
+        <div class="row-start-2 place-self-center max-w-md text-center">
+          <h2 class="text-[28px] font-normal mb-2">Desain yang user-friendly membuat
+            navigasi cepat dan mudah, bahkan bagi pemula.</h2>
         </div>
       </div>
     </div>
-  </template>
-  
+
+    <!-- Bagian kanan -->
+    <div class="flex flex-col w-full lg:w-1/2 justify-center px-8">
+      <div class="max-w-md w-full mx-auto">
+        <!-- Logo -->
+        <h1 class="text-3xl font-bold text-blue-600 mb-6 text-right">MASPOS</h1>
+
+        <!-- Slot untuk konten halaman (Login.vue) -->
+        <slot />
+      </div>
+    </div>
+  </div>
+</template>
