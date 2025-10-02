@@ -82,9 +82,8 @@ class AuthenticatedSessionController extends Controller
         Auth::login($user, $remember);
         $request->session()->regenerate();
 
-        // Replace RouteServiceProvider::HOME with a safe fallback
-        $redirectTo = Route::has('dashboard') ? route('dashboard') : '/';
-        return redirect()->intended($redirectTo);
+        // Arahkan ke HomePage setelah login
+        return redirect()->intended(route('home'));
     }
 
     /**
