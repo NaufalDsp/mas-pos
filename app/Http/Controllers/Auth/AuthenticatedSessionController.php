@@ -8,8 +8,11 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -27,13 +30,61 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
-        $request->authenticate();
+        // Validate username (can be email string) and password
+        $credentials = $request->validate([
+            'username' => ['required', 'string'],
+            'password' => ['required', 'string'],
+        ]);
 
+        $login = $credentials['username'];
+        $password = $credentials['password'];
+        $remember = $request->boolean('remember');
+
+        // Cari user by email, atau username/name jika kolom ada
+        $query = User::query();
+        if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
+            $query->where('email', $login);
+        } else {
+            $added = false;
+            if (Schema::hasColumn('users', 'username')) {
+                $query->where('username', $login);
+                $added = true;
+            }
+            if (Schema::hasColumn('users', 'name')) {
+                if ($added) {
+                    $query->orWhere('name', $login);
+                } else {
+                    $query->where('name', $login);
+                    $added = true;
+                }
+            }
+            if (!$added) {
+                // Fallback ke email bila kolom username/name tidak ada
+                $query->where('email', $login);
+            }
+        }
+        $user = $query->first();
+
+        if (!$user) {
+            return back()->withErrors([
+                'username' => 'Username yang anda masukkan salah.',
+            ])->onlyInput('username');
+        }
+
+        if (!Hash::check($password, $user->password)) {
+            return back()->withErrors([
+                'password' => 'Password yang anda masukkan salah.',
+            ])->onlyInput('username');
+        }
+
+        Auth::login($user, $remember);
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Replace RouteServiceProvider::HOME with a safe fallback
+        $redirectTo = Route::has('dashboard') ? route('dashboard') : '/';
+        return redirect()->intended($redirectTo);
     }
 
     /**

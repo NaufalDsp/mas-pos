@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen overflow-x-hidden overflow-y-auto flex bg-[#EDF0F2] font-sans">
+  <div class="min-h-screen overflow-x-hidden overflow-y-auto flex container bg-[#EDF0F2] font-sans">
     <!-- Bagian kiri -->
     <div class="hidden lg:flex w-1/2 items-center justify-center p-10">
       <div
@@ -16,11 +16,15 @@
     </div>
 
     <!-- Bagian kanan -->
-    <div class="flex flex-col w-full lg:w-1/2 justify-center px-8">
-      <div class="max-w-md w-full mx-auto">
-        <!-- Logo -->
-        <h1 class="text-3xl font-bold text-blue-600 mb-6 text-right">MASPOS</h1>
+    <div class="flex flex-col w-full lg:w-1/2 justify-center px-8 relative">
+      <!-- Overlay judul: top sejajar p-10 kiri, kanan sejajar tepi form -->
+      <div class="absolute inset-x-0 top-10">
+        <div class="max-w-md w-full mx-auto">
+          <h1 class="text-3xl font-bold text-blue-600 text-right">MASPOS</h1>
+        </div>
+      </div>
 
+      <div class="max-w-md w-full mx-auto">
         <!-- Slot untuk konten halaman (Login.vue) -->
         <slot />
       </div>
