@@ -1,5 +1,5 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import { ref } from 'vue';
@@ -18,7 +18,11 @@ const totalTagihan = ref('Rp 224.000');
             <!-- Bar Atas: Logo + Tombol + Keranjang + Avatar -->
             <div class="flex items-center justify-between pb-4 border-b border-gray-300">
                 <!-- Logo -->
-                <h1 class="text-xl font-extrabold text-blue-600">MASPOS</h1>
+                <h1>
+                    <Link :href="route('home')" class="text-xl font-extrabold text-blue-600 hover:opacity-80">
+                    MASPOS
+                    </Link>
+                </h1>
 
                 <!-- Kontrol Kanan: Tombol + Keranjang + Avatar -->
                 <div class="flex items-center gap-3">
