@@ -1,5 +1,5 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 
@@ -39,10 +39,13 @@ const products = [
 
         <!-- Kontrol Kanan: Tombol + Keranjang + Avatar -->
         <div class="flex items-center gap-3">
-          <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">+ Tambah
-            Kategori</button>
-          <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">+ Tambah
-            Produk</button>
+          <Link :href="route('categories.create')"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
+          + Tambah Kategori
+          </Link>
+          <Link :href="route('products.create')" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
+            + Tambah Produk
+          </Link>
 
           <div class="flex items-center divide-x-2 divide-gray-300">
             <!-- Keranjang -->
