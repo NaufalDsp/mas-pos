@@ -13,7 +13,15 @@ const products = [
   { name: "Burger Gilz", price: "Rp 29.000" },
   { name: "Big Mac Cheese", price: "Rp 31.000" },
   { name: "Lechy Tea", price: "Rp 12.000" },
-  { name: "Coca Cola", price: "Rp 10.000" }
+  { name: "Coca Cola", price: "Rp 10.000" },
+  { name: "BBQ Chicken Pizza", price: "Rp 52.000" },
+  { name: "Veggie Supreme", price: "Rp 40.000" },
+  { name: "Spicy Wings", price: "Rp 28.000" },
+  { name: "Chocolate Shake", price: "Rp 16.000" },
+  { name: "Iced Coffee", price: "Rp 15.000" },
+  { name: "Smoky Bacon Ranch", price: "Rp 47.500" },
+  { name: "Mediterranean Feast", price: "Rp 57.000" },
+  { name: "Mushroom & Truffle", price: "Rp 38.000" },
 ]
 </script>
 
@@ -96,11 +104,12 @@ const products = [
       </div>
     </header>
 
+
     <!-- Grid Produk -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 mt-6">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 mt-4">
       <div v-for="(product, index) in products" :key="index"
-        class="bg-white rounded-xl shadow p-4 flex flex-col items-center">
-        <img src="/PepperoniChesse.png" alt="Product" class="w-full h-32 object-cover rounded-md mb-4" />
+        class="bg-white rounded-xl shadow p-2 flex flex-col w-[216px]">
+        <img src="/PepperoniChesse.png" alt="Product" class="w-full h-[177px] object-cover rounded-md mb-4" />
         <h3 class="text-sm font-semibold text-gray-800">{{ product.name }}</h3>
         <p class="text-green-600 font-medium mb-3">{{ product.price }}</p>
         <button class="w-full py-2 px-3 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
