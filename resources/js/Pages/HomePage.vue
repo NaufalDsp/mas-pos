@@ -106,7 +106,7 @@ const products = [
 
 
     <!-- Grid Produk -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 mt-4">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-6 gap-x-2 mt-4">
       <div v-for="(product, index) in products" :key="index"
         class="bg-white rounded-xl shadow p-2 flex flex-col w-[216px]">
         <img src="/PepperoniChesse.png" alt="Product" class="w-full h-[177px] object-cover rounded-md mb-4" />
