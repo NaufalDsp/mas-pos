@@ -18,6 +18,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/categories/create', fn() => Inertia::render('Category/AddCategory'))->name('categories.create');
     Route::get('/products/create', fn() => Inertia::render('Product/AddProduct'))->name('products.create');
+    Route::get('/cart', fn() => Inertia::render('Cart/CartPage'))->name('cart');
 });
 
 require __DIR__ . '/auth.php';
