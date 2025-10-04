@@ -71,6 +71,7 @@ const removeItem = (id) => {
         cartItems.value.splice(index, 1);
     }
 };
+
 </script>
 
 <template>
@@ -124,14 +125,19 @@ const removeItem = (id) => {
                         <!-- Avatar + Dropdown -->
                         <div class="pl-4">
                             <Dropdown align="right" width="48">
-                                <template #trigger>
+                                <template #trigger="{ open }">
                                     <button type="button"
-                                        class="inline-flex items-center gap-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
-                                        aria-label="Menu profil">
+                                        class="inline-flex items-center gap-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                        aria-label="Menu profil" :aria-expanded="open">
                                         <img src="/PepperoniChesse.png" alt="User"
                                             class="w-10 h-10 rounded-full object-cover" />
-                                        <svg class="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 20 20" fill="currentColor">
+                                        <span
+                                            class="text-sm font-medium text-gray-800 max-w-[140px] truncate hidden sm:block">
+                                            {{ $page.props.auth?.user?.name || 'User' }}
+                                        </span>
+                                        <svg class="text-gray-500" xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 20 20" fill="currentColor"
+                                            :class="['h-4 w-4 transition-transform duration-200', open ? 'rotate-180' : '']">
                                             <path fill-rule="evenodd"
                                                 d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z"
                                                 clip-rule="evenodd" />
