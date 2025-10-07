@@ -1,32 +1,59 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 
-const products = [
-  { name: "Pepperoni Cheese", price: "Rp 45.000" },
-  { name: "Pepperoni Fiesta", price: "Rp 55.000" },
-  { name: "Smoky Bacon Ranch", price: "Rp 47.500" },
-  { name: "Mediterranean Feast", price: "Rp 57.000" },
-  { name: "Mushroom & Truffle", price: "Rp 38.000" },
-  { name: "French Fries", price: "Rp 18.000" },
-  { name: "Burger Gilz", price: "Rp 29.000" },
-  { name: "Big Mac Cheese", price: "Rp 31.000" },
-  { name: "Lechy Tea", price: "Rp 12.000" },
-  { name: "Coca Cola", price: "Rp 10.000" },
-  { name: "BBQ Chicken Pizza", price: "Rp 52.000" },
-  { name: "Veggie Supreme", price: "Rp 40.000" },
-  { name: "Spicy Wings", price: "Rp 28.000" },
-  { name: "Chocolate Shake", price: "Rp 16.000" },
-  { name: "Iced Coffee", price: "Rp 15.000" },
-  { name: "Smoky Bacon Ranch", price: "Rp 47.500" },
-  { name: "Mediterranean Feast", price: "Rp 57.000" },
-  { name: "Mushroom & Truffle", price: "Rp 38.000" },
-]
-const totalTagihan = ref('Rp 224.000');
-const cartItems = ref([]);
+// Gantikan data statis dengan props dari backend
+const props = defineProps({
+  products: { type: Array, default: () => [] }, // [{ id, name, price, image_url?, category_id, category? }]
+  categories: { type: Array, default: () => [] }, // [{ id, name }]
+  cart_count: { type: Number, default: 0 },
+  cart_total: { type: [Number, String], default: 0 },
+  cart_total_formatted: { type: String, default: '' },
+});
+
+// State untuk pencarian dan filter kategori
+const searchTerm = ref('');
+const selectedCategoryId = ref(null);
+
+// Formatter harga IDR jika backend tidak kirim string terformat
+const formatCurrency = (value) => {
+  if (typeof value === 'string' && value.trim().startsWith('Rp')) return value;
+  const number = Number(value || 0);
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+  }).format(number);
+};
+
+// Total tagihan (gunakan formatted dari backend jika ada)
+const totalTagihan = computed(() => props.cart_total_formatted || formatCurrency(props.cart_total));
+
+// Filter produk berdasar search + kategori
+const filteredProducts = computed(() => {
+  const term = searchTerm.value.trim().toLowerCase();
+  return props.products.filter((p) => {
+    const inCategory =
+      !selectedCategoryId.value ||
+      p.category_id === selectedCategoryId.value ||
+      p.category?.id === selectedCategoryId.value;
+    const inSearch = !term || p.name?.toLowerCase().includes(term);
+    return inCategory && inSearch;
+  });
+});
+
+// Tambah ke keranjang (POST ke cart.store)
+const addToCart = (product) => {
+  router.post(
+    route('cart.store'),
+    { product_id: product.id, qty: 1 },
+    { preserveScroll: true }
+  );
+};
 </script>
+
 
 <template>
 
@@ -63,7 +90,7 @@ const cartItems = ref([]);
               <!-- Badge angka item -->
               <span
                 class="absolute -top-2 -right-1 bg-green-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
-                {{ cartItems.length }}
+                {{ props.cart_count }}
               </span>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                 stroke="currentColor" class="h-5 w-5">
@@ -115,29 +142,41 @@ const cartItems = ref([]);
       <div class="flex flex-col sm:flex-row sm:items-center sm:gap-4">
         <!-- Search -->
         <div class="flex-1 max-w-md">
-          <input type="text" placeholder="Cari nama produk ..."
-            class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-blue-300" />
+          <input
+            type="text"
+            placeholder="Cari nama produk ..."
+            class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-blue-300"
+            v-model="searchTerm"
+          />
         </div>
 
-        <!-- Filter Kategori -->
+        <!-- Filter Kategori (dinamis dari backend) -->
         <div class="flex gap-2 mt-3 sm:mt-0">
-          <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">Semua</button>
-          <button class="px-4 py-2 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">Burger</button>
-          <button class="px-4 py-2 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">Pizza</button>
-          <button class="px-4 py-2 bg-gray-200 rounded-lg text-sm hover:bg-gray-300">Drink</button>
+          <button class="px-4 py-2 rounded-lg text-sm"
+            :class="!selectedCategoryId ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'"
+            @click="selectedCategoryId = null">
+            Semua
+          </button>
+          <button v-for="cat in props.categories" :key="cat.id" class="px-4 py-2 rounded-lg text-sm"
+            :class="selectedCategoryId === cat.id ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'"
+            @click="selectedCategoryId = cat.id">
+            {{ cat.name }}
+          </button>
         </div>
       </div>
     </header>
-
-
     <!-- Grid Produk -->
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-6 gap-x-2 mt-4">
-      <div v-for="(product, index) in products" :key="index"
+      <div v-for="product in filteredProducts" :key="product.id || product.name"
         class="bg-white rounded-xl shadow p-2 flex flex-col w-[216px]">
-        <img src="/PepperoniChesse.png" alt="Product" class="w-full h-[177px] object-cover rounded-md mb-4" />
+        <img :src="product.image_url || '/PepperoniChesse.png'" :alt="product.name"
+          class="w-full h-[177px] object-cover rounded-md mb-4" />
         <h3 class="text-sm font-semibold text-gray-800">{{ product.name }}</h3>
-        <p class="text-green-600 font-medium mb-3">{{ product.price }}</p>
-        <button class="w-full py-2 px-3 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
+        <p class="text-green-600 font-medium mb-3">{{ formatCurrency(product.price) }}</p>
+        <button
+          class="w-full py-2 px-3 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition"
+          @click="addToCart(product)"
+        >
           + Keranjang
         </button>
       </div>
