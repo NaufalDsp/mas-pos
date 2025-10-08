@@ -1,12 +1,31 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
-import { ref } from 'vue';
 
-const kategori = ref('');
-const totalTagihan = ref('Rp 224.000');
-const cartItems = ref([]); 
+const props = defineProps({
+    totalTagihan: String,
+    cartItemsCount: Number,
+});
+
+// Inertia form helper
+const form = useForm({
+    name: ''
+});
+
+const submitForm = () => {
+    form.post(route('categories.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            form.reset();
+        }
+    });
+};
+
+const cancelForm = () => {
+    form.reset();
+    window.history.back();
+};
 </script>
 
 <template>
@@ -37,14 +56,13 @@ const cartItems = ref([]);
                     </Link>
 
                     <div class="flex items-center divide-x-2 divide-gray-300">
-                        <!-- Cart + Total Tagihan (merged design) -->
+                        <!-- Cart + Total Tagihan -->
                         <div class="inline-flex items-center pr-4">
                             <Link :href="route('cart')" aria-label="Keranjang"
                                 class="relative z-10 px-4 py-2 bg-blue-600 text-white rounded-l-lg hover:bg-blue-700 transition flex items-center justify-center shadow-md">
-                            <!-- Badge angka item -->
                             <span
                                 class="absolute -top-2 -right-1 bg-green-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
-                                {{ cartItems.length }}
+                                {{ cartItemsCount || 0 }}
                             </span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                 stroke="currentColor" class="h-5 w-5">
@@ -52,12 +70,13 @@ const cartItems = ref([]);
                                     d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
                             </svg>
                             </Link>
-                            <div class="px-4 py-2 bg-blue-50 text-blue-700 rounded-r-lg text-sm font-semibold">
-                                Total Tagihan {{ totalTagihan }}
+                            <div
+                                class="px-4 py-2 bg-blue-50 text-blue-700 rounded-r-lg text-sm font-semibold whitespace-nowrap">
+                                Total Tagihan {{ totalTagihan || 'Rp 0' }}
                             </div>
                         </div>
 
-                        <!-- Avatar + Dropdown (divider remains on the left) -->
+                        <!-- Avatar + Dropdown -->
                         <div class="pl-4">
                             <Dropdown align="right" width="48">
                                 <template #trigger="{ open }">
@@ -106,19 +125,23 @@ const cartItems = ref([]);
                         <label for="kategori" class="block text-sm font-medium text-gray-700 mb-2">
                             Kategori
                         </label>
-                        <input type="text" id="kategori" v-model="kategori" placeholder="Kategori"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="text" id="kategori" v-model="form.name" placeholder="Kategori"
+                            class="w-full border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            :class="form.errors.name ? 'border-red-500' : 'border-gray-300'" />
+                        <p v-if="form.errors.name" class="mt-1 text-sm text-red-600">{{ form.errors.name }}</p>
                     </div>
 
                     <!-- Tombol Action -->
                     <div class="flex gap-3">
-                        <button type="button"
-                            class="flex-1 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+                        <button type="button" @click="cancelForm"
+                            class="flex-1 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition"
+                            :disabled="form.processing">
                             Batal
                         </button>
                         <button type="submit"
-                            class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
-                            Tambah
+                            class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50"
+                            :disabled="form.processing">
+                            {{ form.processing ? 'Menyimpan...' : 'Tambah' }}
                         </button>
                     </div>
                 </form>

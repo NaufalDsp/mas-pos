@@ -1,21 +1,32 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import { ref } from 'vue';
 
-const produk = ref('');
-const harga = ref('');
-const kategori = ref('');
-const imageFile = ref(null);
+const props = defineProps({
+    categories: Array,
+    totalTagihan: String,
+    cartItemsCount: Number,
+});
+
 const imagePreview = ref(null);
-const totalTagihan = ref('Rp 224.000');
-const cartItems = ref([]);
+const fileInputRef = ref(null);
+
+// Inertia form helper
+const form = useForm({
+    name: '',
+    category_id: '',
+    price: '',
+    stock: '',
+    description: '',
+    image: null
+});
 
 const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-        imageFile.value = file;
+        form.image = file;
         const reader = new FileReader();
         reader.onload = (e) => {
             imagePreview.value = e.target.result;
@@ -24,14 +35,25 @@ const handleFileUpload = (event) => {
     }
 };
 
+const removeImage = () => {
+    imagePreview.value = null;
+    form.image = null;
+};
+
 const submitForm = () => {
-    // Handle form submission
-    console.log({
-        produk: produk.value,
-        harga: harga.value,
-        kategori: kategori.value,
-        image: imageFile.value
+    form.post(route('products.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            form.reset();
+            imagePreview.value = null;
+        }
     });
+};
+
+const cancelForm = () => {
+    form.reset();
+    imagePreview.value = null;
+    window.history.back();
 };
 </script>
 
@@ -63,14 +85,13 @@ const submitForm = () => {
                     </Link>
 
                     <div class="flex items-center divide-x-2 divide-gray-300">
-                        <!-- Cart + Total Tagihan (merged design) -->
+                        <!-- Cart + Total Tagihan -->
                         <div class="inline-flex items-center pr-4">
                             <Link :href="route('cart')" aria-label="Keranjang"
                                 class="relative z-10 px-4 py-2 bg-blue-600 text-white rounded-l-lg hover:bg-blue-700 transition flex items-center justify-center shadow-md">
-                            <!-- Badge angka item -->
                             <span
                                 class="absolute -top-2 -right-1 bg-green-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
-                                {{ cartItems.length }}
+                                {{ cartItemsCount || 0 }}
                             </span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                 stroke="currentColor" class="h-5 w-5">
@@ -78,12 +99,13 @@ const submitForm = () => {
                                     d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
                             </svg>
                             </Link>
-                            <div class="px-4 py-2 bg-blue-50 text-blue-700 rounded-r-lg text-sm font-semibold">
-                                Total Tagihan {{ totalTagihan }}
+                            <div
+                                class="px-4 py-2 bg-blue-50 text-blue-700 rounded-r-lg text-sm font-semibold whitespace-nowrap">
+                                Total Tagihan {{ totalTagihan || 'Rp 0' }}
                             </div>
                         </div>
 
-                        <!-- Avatar + Dropdown (divider remains on the left) -->
+                        <!-- Avatar + Dropdown -->
                         <div class="pl-4">
                             <Dropdown align="right" width="48">
                                 <template #trigger="{ open }">
@@ -132,8 +154,9 @@ const submitForm = () => {
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Gambar Produk
                         </label>
-                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center bg-gray-50 hover:bg-gray-100 transition cursor-pointer"
-                            @click="$refs.fileInput.click()">
+                        <div class="border-2 border-dashed rounded-lg p-8 text-center bg-gray-50 hover:bg-gray-100 transition cursor-pointer"
+                            :class="form.errors.image ? 'border-red-500' : 'border-gray-300'"
+                            @click="fileInputRef.click()">
                             <div v-if="!imagePreview" class="flex flex-col items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-500 mb-3" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
@@ -151,7 +174,7 @@ const submitForm = () => {
                             </div>
                             <div v-else class="relative">
                                 <img :src="imagePreview" alt="Preview" class="max-h-48 mx-auto rounded-lg" />
-                                <button type="button" @click.stop="imagePreview = null; imageFile = null"
+                                <button type="button" @click.stop="removeImage"
                                     class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                         fill="currentColor">
@@ -161,9 +184,10 @@ const submitForm = () => {
                                     </svg>
                                 </button>
                             </div>
-                            <input ref="fileInput" type="file" accept="image/*" class="hidden"
+                            <input ref="fileInputRef" type="file" accept="image/*" class="hidden"
                                 @change="handleFileUpload" />
                         </div>
+                        <p v-if="form.errors.image" class="mt-1 text-sm text-red-600">{{ form.errors.image }}</p>
                     </div>
 
                     <!-- Input Produk -->
@@ -171,8 +195,10 @@ const submitForm = () => {
                         <label for="produk" class="block text-sm font-medium text-gray-700 mb-2">
                             Produk
                         </label>
-                        <input type="text" id="produk" v-model="produk" placeholder="Produk"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="text" id="produk" v-model="form.name" placeholder="Nama Produk"
+                            class="w-full border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            :class="form.errors.name ? 'border-red-500' : 'border-gray-300'" />
+                        <p v-if="form.errors.name" class="mt-1 text-sm text-red-600">{{ form.errors.name }}</p>
                     </div>
 
                     <!-- Input Harga -->
@@ -180,8 +206,21 @@ const submitForm = () => {
                         <label for="harga" class="block text-sm font-medium text-gray-700 mb-2">
                             Harga
                         </label>
-                        <input type="text" id="harga" v-model="harga" placeholder="Harga"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <input type="number" id="harga" v-model="form.price" placeholder="Harga" min="0" step="1000"
+                            class="w-full border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            :class="form.errors.price ? 'border-red-500' : 'border-gray-300'" />
+                        <p v-if="form.errors.price" class="mt-1 text-sm text-red-600">{{ form.errors.price }}</p>
+                    </div>
+
+                    <!-- Input Stock -->
+                    <div class="mb-4">
+                        <label for="stock" class="block text-sm font-medium text-gray-700 mb-2">
+                            Stok (Opsional)
+                        </label>
+                        <input type="number" id="stock" v-model="form.stock" placeholder="Jumlah Stok" min="0"
+                            class="w-full border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            :class="form.errors.stock ? 'border-red-500' : 'border-gray-300'" />
+                        <p v-if="form.errors.stock" class="mt-1 text-sm text-red-600">{{ form.errors.stock }}</p>
                     </div>
 
                     <!-- Select Kategori -->
@@ -189,25 +228,30 @@ const submitForm = () => {
                         <label for="kategori" class="block text-sm font-medium text-gray-700 mb-2">
                             Pilih Kategori
                         </label>
-                        <select id="kategori" v-model="kategori"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                        <select id="kategori" v-model="form.category_id"
+                            class="w-full border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                            :class="form.errors.category_id ? 'border-red-500 text-red-900' : 'border-gray-300 text-gray-500'"
                             style="background-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 24 24%27 stroke=%27%236b7280%27%3E%3Cpath stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27M19 9l-7 7-7-7%27/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem;">
-                            <option value="" disabled selected>Pilih kategori</option>
-                            <option value="pizza">Pizza</option>
-                            <option value="burger">Burger</option>
-                            <option value="drink">Drink</option>
+                            <option value="" disabled>Pilih kategori</option>
+                            <option v-for="category in categories" :key="category.id" :value="category.id">
+                                {{ category.name }}
+                            </option>
                         </select>
+                        <p v-if="form.errors.category_id" class="mt-1 text-sm text-red-600">{{ form.errors.category_id
+                        }}</p>
                     </div>
 
                     <!-- Tombol Action -->
                     <div class="flex gap-3">
-                        <button type="button"
-                            class="flex-1 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+                        <button type="button" @click="cancelForm"
+                            class="flex-1 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition"
+                            :disabled="form.processing">
                             Batal
                         </button>
                         <button type="submit"
-                            class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
-                            Tambah
+                            class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50"
+                            :disabled="form.processing">
+                            {{ form.processing ? 'Menyimpan...' : 'Tambah' }}
                         </button>
                     </div>
                 </form>
