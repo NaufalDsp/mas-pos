@@ -16,8 +16,13 @@ class CartController extends Controller
 {
     public function index()
     {
+        $userId = Auth::id();
+        if (!$userId) {
+            return back()->with('error', 'User tidak ditemukan');
+        }
+
         $cart = Cart::with(['items.product'])->firstOrCreate([
-            'user_id' => Auth::id()
+            'user_id' => $userId
         ]);
 
         $totalTagihan = $cart->total;
@@ -30,6 +35,11 @@ class CartController extends Controller
 
     public function addItem(Request $request)
     {
+        $userId = Auth::id();
+        if (!$userId) {
+            return back()->with('error', 'User tidak ditemukan');
+        }
+
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity' => 'nullable|integer|min:1'
@@ -44,7 +54,7 @@ class CartController extends Controller
 
         // Get or create cart
         $cart = Cart::firstOrCreate([
-            'user_id' => Auth::id()
+            'user_id' => $userId
         ]);
 
         // Check if product already in cart
@@ -99,7 +109,12 @@ class CartController extends Controller
 
     public function checkout()
     {
-        $cart = Cart::with(['items.product'])->where('user_id', Auth()->id())->first();
+        $userId = Auth::id();
+        if (!$userId) {
+            return back()->with('error', 'User tidak ditemukan');
+        }
+
+        $cart = Cart::with(['items.product'])->where('user_id', $userId)->first();
 
         if (!$cart || $cart->items->isEmpty()) {
             return back()->with('error', 'Keranjang kosong');
