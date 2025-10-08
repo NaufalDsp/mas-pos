@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\User;
+use App\Providers\RouteServiceProvider; // pastikan import ini ada
 
 class AuthenticatedSessionController extends Controller
 {
@@ -83,7 +84,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         // Arahkan ke HomePage setelah login
-        return redirect()->intended(route('home'));
+        return redirect()->intended(RouteServiceProvider::HOME);
     }
 
     /**
