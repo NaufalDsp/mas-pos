@@ -11,7 +11,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('HomePage');
 
 Route::get('/home', [HomeController::class, 'index'])
     ->middleware(['auth'])
@@ -52,5 +52,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/cart/{cartItem}', [CartController::class, 'removeItem'])->name('cart.remove');
     Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 });
+
+
 
 require __DIR__ . '/auth.php';
