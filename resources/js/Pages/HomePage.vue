@@ -1,23 +1,21 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
+import { ref as _ref, onMounted as _onMounted, onBeforeUnmount as _onBeforeUnmount, nextTick as _nextTick } from 'vue';
 
-// Gantikan data statis dengan props dari backend
 const props = defineProps({
-  products: { type: Array, default: () => [] }, // [{ id, name, price, image_url?, category_id, category? }]
-  categories: { type: Array, default: () => [] }, // [{ id, name }]
+  products: { type: Array, default: () => [] },
+  categories: { type: Array, default: () => [] },
   cart_count: { type: Number, default: 0 },
   cart_total: { type: [Number, String], default: 0 },
   cart_total_formatted: { type: String, default: '' },
 });
 
-// State untuk pencarian dan filter kategori
 const searchTerm = ref('');
 const selectedCategoryId = ref(null);
 
-// Formatter harga IDR jika backend tidak kirim string terformat
 const formatCurrency = (value) => {
   if (typeof value === 'string' && value.trim().startsWith('Rp')) return value;
   const number = Number(value || 0);
@@ -28,10 +26,8 @@ const formatCurrency = (value) => {
   }).format(number);
 };
 
-// Total tagihan (gunakan formatted dari backend jika ada)
 const totalTagihan = computed(() => props.cart_total_formatted || formatCurrency(props.cart_total));
 
-// Filter produk berdasar search + kategori
 const filteredProducts = computed(() => {
   const term = searchTerm.value.trim().toLowerCase();
   return props.products.filter((p) => {
@@ -44,17 +40,112 @@ const filteredProducts = computed(() => {
   });
 });
 
-// Tambah ke keranjang (POST ke cart.store)
 const addToCart = (product) => {
-  router.post(
-    route('cart.store'),
-    { product_id: product.id, qty: 1 },
-    { preserveScroll: true }
-  );
+  router.post(route('cart.store'), { product_id: product.id, qty: 1 }, { preserveScroll: true });
 };
+
+// --- Scrollable category list logic ---
+const scrollContainer = _ref(null);
+const showLeft = _ref(false);
+const showRight = _ref(false);
+
+// cek posisi scroll -> atur showLeft/showRight
+const handleScroll = () => {
+  const el = scrollContainer.value;
+  if (!el) return;
+  // threshold kecil agar tidak fliker
+  const scLeft = el.scrollLeft;
+  const visible = el.clientWidth;
+  const total = el.scrollWidth;
+  showLeft.value = scLeft > 5;
+  showRight.value = scLeft + visible < total - 5;
+};
+
+// scroll amount: 70% of visible width (smooth)
+const scrollLeft = () => {
+  const el = scrollContainer.value;
+  if (!el) return;
+  el.scrollBy({ left: -Math.round(el.clientWidth * 0.7), behavior: 'smooth' });
+};
+
+const scrollRight = () => {
+  const el = scrollContainer.value;
+  if (!el) return;
+  el.scrollBy({ left: Math.round(el.clientWidth * 0.7), behavior: 'smooth' });
+};
+
+// Drag-to-scroll state and handlers
+const isDragging = _ref(false);
+const startX = _ref(0);
+const startScrollLeft = _ref(0);
+
+const onDragStart = (e) => {
+  const el = scrollContainer.value;
+  if (!el) return;
+  isDragging.value = true;
+  startX.value = e.clientX;
+  startScrollLeft.value = el.scrollLeft;
+};
+
+const onDragMove = (e) => {
+  if (!isDragging.value) return;
+  const el = scrollContainer.value;
+  if (!el) return;
+  e.preventDefault();
+  const dx = e.clientX - startX.value;
+  el.scrollLeft = startScrollLeft.value - dx;
+  handleScroll();
+};
+
+const onDragEnd = () => {
+  isDragging.value = false;
+};
+
+const onWheel = (e) => {
+  const el = scrollContainer.value;
+  if (!el) return;
+  // translate vertical wheel to horizontal scroll for better UX
+  if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+    e.preventDefault();
+    el.scrollBy({ left: e.deltaY, behavior: 'auto' });
+    handleScroll();
+  }
+};
+
+// inisialisasi & resize listener
+_onMounted(() => {
+  // kalau categories dimuat secara async dari backend, tunggu nextTick sedikit
+  _nextTick(() => handleScroll());
+  window.addEventListener('resize', handleScroll);
+  // ensure drag ends even if mouse leaves the container
+  window.addEventListener('mouseup', onDragEnd);
+});
+_onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleScroll);
+  window.removeEventListener('mouseup', onDragEnd);
+});
 </script>
 
+<style>
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* drag-to-scroll cursors */
+.drag-scroll {
+  cursor: grab;
+  user-select: none;
+}
+
+.drag-scroll.dragging {
+  cursor: grabbing;
+}
+</style>
 <template>
 
   <Head title="Home" />
@@ -62,16 +153,12 @@ const addToCart = (product) => {
   <div class="p-6 bg-gray-100 min-h-screen">
     <!-- Header -->
     <header class="bg-white shadow rounded-lg p-6 mb-6">
-      <!-- Bar Atas: Logo + Tombol + Keranjang + Avatar -->
+      <!-- Bar Atas -->
       <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-300">
-        <!-- Logo -->
         <h1>
-          <Link :href="route('home')" class="text-xl font-extrabold text-blue-600 hover:opacity-80">
-          MASPOS
-          </Link>
+          <Link :href="route('home')" class="text-xl font-extrabold text-blue-600 hover:opacity-80">MASPOS</Link>
         </h1>
 
-        <!-- Kontrol Kanan: Tombol + Keranjang + Avatar -->
         <div class="flex items-center gap-3">
           <Link :href="route('categories.create')"
             class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
@@ -83,11 +170,9 @@ const addToCart = (product) => {
           </Link>
 
           <div class="flex items-center divide-x-2 divide-gray-300">
-            <!-- Cart + Total Tagihan (merged design) -->
             <div class="inline-flex items-center pr-4">
               <Link :href="route('cart')" aria-label="Keranjang"
                 class="relative z-10 px-4 py-2 bg-blue-600 text-white rounded-l-lg hover:bg-blue-700 transition flex items-center justify-center shadow-md">
-              <!-- Badge angka item -->
               <span
                 class="absolute -top-2 -right-1 bg-green-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
                 {{ props.cart_count }}
@@ -103,20 +188,19 @@ const addToCart = (product) => {
               </div>
             </div>
 
-            <!-- Avatar + Dropdown -->
             <div class="pl-4">
               <Dropdown align="right" width="48">
                 <template #trigger="{ open }">
                   <button type="button"
                     class="inline-flex items-center gap-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
-                    aria-label="Menu profil" :aria-expanded="open">
+                    :aria-expanded="open">
                     <img src="/PepperoniChesse.png" alt="User" class="w-10 h-10 rounded-full object-cover" />
                     <span class="text-sm font-medium text-gray-800 max-w-[140px] truncate hidden sm:block">
                       {{ $page.props.auth?.user?.name || 'User' }}
                     </span>
                     <svg class="h-4 w-4 text-gray-500 transition-transform duration-200"
-                      xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                      :class="open ? 'rotate-180' : ''">
+                      xmlns="http://www.w3.org/2000/svg" fill="currentColor" :class="open ? 'rotate-180' : ''"
+                      viewBox="0 0 20 20">
                       <path fill-rule="evenodd"
                         d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z"
                         clip-rule="evenodd" />
@@ -125,12 +209,8 @@ const addToCart = (product) => {
                 </template>
 
                 <template #content>
-                  <DropdownLink :href="route('profile.edit')">
-                    Edit Profile
-                  </DropdownLink>
-                  <DropdownLink :href="route('logout')" method="post" as="button">
-                    Log Out
-                  </DropdownLink>
+                  <DropdownLink :href="route('profile.edit')">Edit Profile</DropdownLink>
+                  <DropdownLink :href="route('logout')" method="post" as="button">Log Out</DropdownLink>
                 </template>
               </Dropdown>
             </div>
@@ -138,33 +218,72 @@ const addToCart = (product) => {
         </div>
       </div>
 
-      <!-- Bar Bawah: Search + Kategori -->
-      <div class="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-        <!-- Search -->
-        <div class="flex-1 max-w-md">
-          <input
-            type="text"
-            placeholder="Cari nama produk ..."
-            class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-blue-300"
-            v-model="searchTerm"
-          />
+      <!-- Search + Kategori Scrollable (REPLACE THIS BLOCK) -->
+      <div class="flex items-center gap-2">
+        <!-- Search (fixed size, tidak boleh menyusut) -->
+        <div class="relative w-[256px] h-[32px] flex-shrink-0">
+          <!-- icon search -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 16.65z" />
+          </svg>
+
+          <input type="text" placeholder="Cari nama produk ..."
+            class="w-full h-full border rounded-lg pl-8 pr-2 text-sm focus:outline-none focus:ring focus:ring-blue-300"
+            v-model="searchTerm" />
         </div>
 
-        <!-- Filter Kategori (dinamis dari backend) -->
-        <div class="flex gap-2 mt-3 sm:mt-0">
-          <button class="px-4 py-2 rounded-lg text-sm"
-            :class="!selectedCategoryId ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'"
-            @click="selectedCategoryId = null">
-            Semua
-          </button>
-          <button v-for="cat in props.categories" :key="cat.id" class="px-4 py-2 rounded-lg text-sm"
-            :class="selectedCategoryId === cat.id ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'"
-            @click="selectedCategoryId = cat.id">
-            {{ cat.name }}
-          </button>
+        <!-- Tombol Scroll Kiri: tepat di sebelah kanan kotak search -->
+        <button v-if="showLeft" @click="scrollLeft"
+          class="h-[32px] w-8 flex items-center justify-center bg-white rounded-md shadow" aria-label="Scroll left">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        <!-- Scrollable category area (flex-1 agar menyesuaikan sisa lebar) -->
+        <div class="relative flex-1 min-w-0">
+          <!-- actual scroll container -->
+          <div ref="scrollContainer" class="flex gap-2 overflow-x-auto no-scrollbar py-1 px-2 items-center drag-scroll"
+            :class="{ 'dragging': isDragging }" @scroll="handleScroll" @mousedown="onDragStart" @mousemove="onDragMove"
+            @mouseup="onDragEnd" @mouseleave="onDragEnd" @wheel="onWheel">
+            <button
+              class="px-4 h-[32px] rounded-lg text-sm whitespace-nowrap flex items-center justify-center flex-shrink-0"
+              :class="!selectedCategoryId ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'"
+              @click="selectedCategoryId = null">
+              Semua
+            </button>
+
+            <button v-for="cat in props.categories" :key="cat.id"
+              class="px-4 h-[32px] rounded-lg text-sm whitespace-nowrap flex items-center justify-center flex-shrink-0"
+              :class="selectedCategoryId === cat.id ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'"
+              @click="selectedCategoryId = cat.id">
+              {{ cat.name }}
+            </button>
+          </div>
+
+          <!-- Fade overlay kiri & kanan (tampil hanya saat overflow) -->
+          <div v-show="showLeft"
+            class="pointer-events-none absolute left-0 top-0 h-full w-8 bg-gradient-to-r from-white to-transparent">
+          </div>
+          <div v-show="showRight"
+            class="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-white to-transparent">
+          </div>
         </div>
+
+        <!-- Tombol Scroll Kanan: berada di ujung kanan area -->
+        <button v-if="showRight" @click="scrollRight" class="h-[32px] w-8 flex items-center justify-center    shadow"
+          aria-label="Scroll right">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
     </header>
+
     <!-- Grid Produk -->
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-6 gap-x-2 mt-4">
       <div v-for="product in filteredProducts" :key="product.id || product.name"
@@ -173,10 +292,8 @@ const addToCart = (product) => {
           class="w-full h-[177px] object-cover rounded-md mb-4" />
         <h3 class="text-sm font-semibold text-gray-800">{{ product.name }}</h3>
         <p class="text-green-600 font-medium mb-3">{{ formatCurrency(product.price) }}</p>
-        <button
-          class="w-full py-2 px-3 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition"
-          @click="addToCart(product)"
-        >
+        <button class="w-full py-2 px-3 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition"
+          @click="addToCart(product)">
           + Keranjang
         </button>
       </div>
