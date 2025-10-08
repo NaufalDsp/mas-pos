@@ -207,7 +207,6 @@ _onBeforeUnmount(() => {
                     </svg>
                   </button>
                 </template>
-
                 <template #content>
                   <DropdownLink :href="route('profile.edit')">Edit Profile</DropdownLink>
                   <DropdownLink :href="route('logout')" method="post" as="button">Log Out</DropdownLink>
@@ -221,12 +220,13 @@ _onBeforeUnmount(() => {
       <!-- Search + Kategori Scrollable (REPLACE THIS BLOCK) -->
       <div class="flex items-center gap-2">
         <!-- Search (fixed size, tidak boleh menyusut) -->
-        <div class="relative w-[256px] h-[32px] flex-shrink-0">
+        <div class="relative w-[272px] h-[32px] flex-shrink-0">
           <!-- icon search -->
-          <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
-            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 16.65z" />
+          <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
+            class="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor">
+            <circle cx="11" cy="11" r="7" stroke-width="2" />
+            <path d="M21 21l-4.35-4.35" stroke-width="2" stroke-linecap="round" />
           </svg>
 
           <input type="text" placeholder="Cari nama produk ..."
@@ -285,7 +285,7 @@ _onBeforeUnmount(() => {
     </header>
 
     <!-- Grid Produk -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-6 gap-x-2 mt-4">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-6 gap-x-9 mt-4">
       <div v-for="product in filteredProducts" :key="product.id || product.name"
         class="bg-white rounded-xl shadow p-2 flex flex-col w-[216px]">
         <img :src="product.image_url || '/PepperoniChesse.png'" :alt="product.name"
