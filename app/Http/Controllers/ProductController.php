@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Cart;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -14,8 +16,24 @@ class ProductController extends Controller
     {
         $categories = Category::all();
 
+        // Get cart info
+        $cart = null;
+        $totalTagihan = 0;
+        $cartItemsCount = 0;
+
+        if (Auth::check()) {
+            $cart = Cart::with(['items.product'])->firstOrCreate([
+                'user_id' => Auth::id()
+            ]);
+
+            $totalTagihan = $cart->total;
+            $cartItemsCount = $cart->items->sum('quantity');
+        }
+
         return Inertia::render('Product/AddProduct', [
-            'categories' => $categories
+            'categories' => $categories,
+            'totalTagihan' => 'Rp ' . number_format($totalTagihan, 0, ',', '.'),
+            'cartItemsCount' => $cartItemsCount,
         ]);
     }
 

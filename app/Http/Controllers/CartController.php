@@ -10,13 +10,14 @@ use App\Models\TransactionItem;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
     public function index()
     {
         $cart = Cart::with(['items.product'])->firstOrCreate([
-            'user_id' => auth()->id()
+            'user_id' => Auth::id()
         ]);
 
         $totalTagihan = $cart->total;
@@ -43,7 +44,7 @@ class CartController extends Controller
 
         // Get or create cart
         $cart = Cart::firstOrCreate([
-            'user_id' => auth()->id()
+            'user_id' => Auth::id()
         ]);
 
         // Check if product already in cart
@@ -98,7 +99,7 @@ class CartController extends Controller
 
     public function checkout()
     {
-        $cart = Cart::with(['items.product'])->where('user_id', auth()->id())->first();
+        $cart = Cart::with(['items.product'])->where('user_id', Auth()->id())->first();
 
         if (!$cart || $cart->items->isEmpty()) {
             return back()->with('error', 'Keranjang kosong');
@@ -108,7 +109,7 @@ class CartController extends Controller
         try {
             // Create transaction
             $transaction = Transaction::create([
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'total' => $cart->total
             ]);
 
