@@ -10,7 +10,7 @@ const props = defineProps({
     totalTagihan: String,
 });
 
-// Helper untuk format harga (aman untuk string/number)
+// Helper untuk format harga (string/number)
 const toNumber = (v) => (typeof v === 'number' ? v : Number(v || 0));
 const formatPrice = (price) => `Rp ${toNumber(price).toLocaleString('id-ID')}`;
 
@@ -19,7 +19,7 @@ const getSubTotal = (item) => {
     return formatPrice(item.price * item.quantity);
 };
 
-// ✅ Update jumlah item (gunakan PATCH + route yang benar)
+//Update jumlah item 
 const updateQuantity = (item, newQty) => {
     if (newQty < 1) return;
     router.patch(route('cart.items.update', item.id), { quantity: newQty }, {
@@ -27,7 +27,7 @@ const updateQuantity = (item, newQty) => {
     });
 };
 
-// ✅ Hapus item (gunakan route yang benar)
+// Hapus item 
 const removeItem = (id) => {
     if (confirm('Apakah kamu yakin ingin menghapus produk ini dari keranjang?')) {
         router.delete(route('cart.items.destroy', id), {
@@ -36,7 +36,7 @@ const removeItem = (id) => {
     }
 };
 
-// ✅ Checkout
+// Checkout
 const checkout = () => {
     if (confirm('Lanjutkan ke pembayaran?')) {
         router.post(route('cart.checkout'), {}, {
