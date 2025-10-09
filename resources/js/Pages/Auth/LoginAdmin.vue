@@ -31,7 +31,7 @@ const submit = () => {
                     </svg>
                 </div>
                 <h1 class="text-4xl font-bold text-white mb-2">Admin Login</h1>
-                <p class="text-white/90 text-lg">MAS POS System</p>
+                <p class="text-white/90 text-lg font-extrabold">MAS POS</p>
             </div>
 
             <!-- Login Card -->
