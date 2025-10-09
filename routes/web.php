@@ -48,10 +48,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Cart
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
-    Route::post('/cart/store', [CartController::class, 'addItem'])->name('cart.store'); // digunakan di HomePage.vue
-    Route::post('/cart/add', [CartController::class, 'addItem'])->name('cart.add');
-    Route::patch('/cart/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.update');
-    Route::delete('/cart/{cartItem}', [CartController::class, 'removeItem'])->name('cart.remove');
+    Route::post('/cart/items', [CartController::class, 'addItem'])->name('cart.items.store');
+    Route::patch('/cart/items/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.items.update');
+    Route::delete('/cart/items/{cartItem}', [CartController::class, 'removeItem'])->name('cart.items.destroy');
     Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 
     // Profile

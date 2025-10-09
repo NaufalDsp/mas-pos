@@ -86,6 +86,11 @@ class CartController extends Controller
 
     public function updateQuantity(Request $request, CartItem $cartItem)
     {
+        // pastikan item milik user aktif
+        if ($cartItem->cart->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         $validated = $request->validate([
             'quantity' => 'required|integer|min:1'
         ]);
@@ -102,6 +107,11 @@ class CartController extends Controller
 
     public function removeItem(CartItem $cartItem)
     {
+        // pastikan item milik user aktif
+        if ($cartItem->cart->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         $cartItem->delete();
 
         return back()->with('success', 'Produk berhasil dihapus dari keranjang');
