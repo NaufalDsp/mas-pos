@@ -65,13 +65,13 @@ const handleScroll = () => {
 const scrollLeft = () => {
   const el = scrollContainer.value;
   if (!el) return;
-  el.scrollBy({ left: -Math.round(el.clientWidth * 0.7), behavior: 'smooth' });
+  el.scrollBy({ left: -Math.round(el.clientWidth * 1.0), behavior: 'smooth' });
 };
 
 const scrollRight = () => {
   const el = scrollContainer.value;
   if (!el) return;
-  el.scrollBy({ left: Math.round(el.clientWidth * 0.7), behavior: 'smooth' });
+  el.scrollBy({ left: Math.round(el.clientWidth * 1.0), behavior: 'smooth' });
 };
 
 // Drag-to-scroll state and handlers
