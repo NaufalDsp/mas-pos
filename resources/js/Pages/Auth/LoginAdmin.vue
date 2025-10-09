@@ -13,6 +13,8 @@ const submit = () => {
         onFinish: () => form.reset('password'),
     });
 };
+
+const showPassword = ref(false); // toggle visibility
 </script>
 
 <template>
@@ -71,10 +73,26 @@ const submit = () => {
                                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                 </svg>
                             </div>
-                            <input id="password" v-model="form.password" type="password" required
-                                autocomplete="current-password"
-                                class="block w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-gray-900 placeholder-gray-400"
+                            <input id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'"
+                                required autocomplete="current-password"
+                                class="block w-full pl-12 pr-12 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-gray-900 placeholder-gray-400"
                                 placeholder="••••••••" />
+                            <button type="button" @click="showPassword = !showPassword"
+                                :aria-label="showPassword ? 'Sembunyikan password' : 'Tampilkan password'"
+                                class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                                tabindex="-1">
+                                <svg v-if="!showPassword" class="h-5 w-5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.956 9.956 0 012.642-4.362M6.228 6.228A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411M15 12a3 3 0 00-3-3M9 12a3 3 0 003 3m-9.9 4.5L21 3" />
+                                </svg>
+                            </button>
                         </div>
                         <p v-if="form.errors.password" class="mt-2 text-sm text-red-600">{{ form.errors.password }}</p>
                     </div>
