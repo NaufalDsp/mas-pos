@@ -49,7 +49,7 @@ const submit = () => {
           :class="{ 'border-red-500 focus:border-red-600': form.errors.password }"
           :aria-invalid="!!form.errors.password" :aria-describedby="form.errors.password ? 'password-error' : null"
           required />
-        <button type="button" class="absolute right-0 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-gray-700"
+        <button type="button" class="absolute right-0 top-1/2 -translate-y-1/2 p-3   text-gray-500 hover:text-gray-700"
           @click="showPassword = !showPassword"
           :aria-label="showPassword ? 'Sembunyikan password' : 'Tampilkan password'"
           :title="showPassword ? 'Sembunyikan password' : 'Tampilkan password'">
