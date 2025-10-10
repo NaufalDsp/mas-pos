@@ -97,8 +97,7 @@ class CartController extends Controller
 
     public function checkout()
     {
-        $cart = Cart::with(['items.product'])->where('user_id', auth()->id())->first();
-
+        $cart = Cart::with(['items.product'])->where('user_id', Auth::id())->first();
         if (!$cart || $cart->items->isEmpty()) {
             return back()->with('error', 'Keranjang kosong');
         }
