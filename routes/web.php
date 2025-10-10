@@ -49,9 +49,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Cart
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::post('/cart/items', [CartController::class, 'addItem'])->name('cart.items.store');
+    Route::post('/cart/store', [CartController::class, 'addItem'])->name('cart.store');
+    Route::post('/cart/add', [CartController::class, 'addItem'])->name('cart.add');
     Route::patch('/cart/items/{cartItem}', [CartController::class, 'updateQuantity'])->name('cart.items.update');
     Route::delete('/cart/items/{cartItem}', [CartController::class, 'removeItem'])->name('cart.items.destroy');
     Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+    Route::get('/payment-success/{transaction}', [CartController::class, 'paymentSuccess'])->name('payment.success');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
