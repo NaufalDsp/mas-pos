@@ -149,7 +149,7 @@ const checkout = () => {
                                     class="w-20 h-20 rounded-lg object-cover" />
                                 <span class="text-sm font-medium text-gray-800">{{ item.product ? item.product.name :
                                     'Produk'
-                                }}</span>
+                                    }}</span>
                             </div>
                         </td>
                         <td class="px-6 py-4">
@@ -166,7 +166,7 @@ const checkout = () => {
                                     </svg>
                                 </button>
                                 <span class="text-sm font-medium text-gray-800 w-8 text-center">{{ item.quantity
-                                }}</span>
+                                    }}</span>
                                 <button @click="updateQuantity(item, item.quantity + 1)"
                                     class="w-8 h-8 flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 transition text-gray-700">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20"

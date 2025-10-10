@@ -16,55 +16,45 @@ class CartController extends Controller
 {
     public function index()
     {
-        $userId = Auth::id();
-        if (!$userId) {
-            return back()->with('error', 'User tidak ditemukan');
-        }
-
         $cart = Cart::with(['items.product'])->firstOrCreate([
-            'user_id' => $userId
+            'user_id' => Auth::id()
         ]);
 
         $totalTagihan = $cart->total;
+        $cartItemsCount = $cart->items->sum('quantity');
 
         return Inertia::render('Cart/CartPage', [
             'cartItems' => $cart->items,
             'totalTagihan' => 'Rp ' . number_format($totalTagihan, 0, ',', '.'),
+            'totalTagihanRaw' => $totalTagihan,
+            'cartItemsCount' => $cartItemsCount,
         ]);
     }
 
     public function addItem(Request $request)
     {
-        $userId = Auth::id();
-        if (!$userId) {
-            return back()->with('error', 'User tidak ditemukan');
-        }
-
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'nullable|integer|min:1'
+            'qty' => 'nullable|integer|min:1'
         ]);
 
         $product = Product::findOrFail($validated['product_id']);
+        $quantity = $validated['qty'] ?? 1;
 
-        // Check stock
-        if ($product->stock < ($validated['quantity'] ?? 1)) {
+        if ($product->stock < $quantity) {
             return back()->with('error', 'Stok tidak mencukupi');
         }
 
-        // Get or create cart
         $cart = Cart::firstOrCreate([
-            'user_id' => $userId
+            'user_id' => Auth::id()
         ]);
 
-        // Check if product already in cart
         $cartItem = CartItem::where('cart_id', $cart->id)
             ->where('product_id', $product->id)
             ->first();
 
         if ($cartItem) {
-            // Update quantity
-            $newQuantity = $cartItem->quantity + ($validated['quantity'] ?? 1);
+            $newQuantity = $cartItem->quantity + $quantity;
 
             if ($product->stock < $newQuantity) {
                 return back()->with('error', 'Stok tidak mencukupi');
@@ -72,11 +62,10 @@ class CartController extends Controller
 
             $cartItem->update(['quantity' => $newQuantity]);
         } else {
-            // Create new cart item
             CartItem::create([
                 'cart_id' => $cart->id,
                 'product_id' => $product->id,
-                'quantity' => $validated['quantity'] ?? 1,
+                'quantity' => $quantity,
                 'price' => $product->price
             ]);
         }
@@ -86,16 +75,10 @@ class CartController extends Controller
 
     public function updateQuantity(Request $request, CartItem $cartItem)
     {
-        // pastikan item milik user aktif
-        if ($cartItem->cart->user_id !== Auth::id()) {
-            abort(403);
-        }
-
         $validated = $request->validate([
             'quantity' => 'required|integer|min:1'
         ]);
 
-        // Check stock
         if ($cartItem->product->stock < $validated['quantity']) {
             return back()->with('error', 'Stok tidak mencukupi');
         }
@@ -107,11 +90,6 @@ class CartController extends Controller
 
     public function removeItem(CartItem $cartItem)
     {
-        // pastikan item milik user aktif
-        if ($cartItem->cart->user_id !== Auth::id()) {
-            abort(403);
-        }
-
         $cartItem->delete();
 
         return back()->with('success', 'Produk berhasil dihapus dari keranjang');
@@ -119,12 +97,7 @@ class CartController extends Controller
 
     public function checkout()
     {
-        $userId = Auth::id();
-        if (!$userId) {
-            return back()->with('error', 'User tidak ditemukan');
-        }
-
-        $cart = Cart::with(['items.product'])->where('user_id', $userId)->first();
+        $cart = Cart::with(['items.product'])->where('user_id', auth()->id())->first();
 
         if (!$cart || $cart->items->isEmpty()) {
             return back()->with('error', 'Keranjang kosong');
@@ -140,6 +113,11 @@ class CartController extends Controller
 
             // Create transaction items and update stock
             foreach ($cart->items as $item) {
+                // Check stock again
+                if ($item->product->stock < $item->quantity) {
+                    throw new \Exception("Stok {$item->product->name} tidak mencukupi");
+                }
+
                 TransactionItem::create([
                     'transaction_id' => $transaction->id,
                     'product_id' => $item->product_id,
@@ -149,8 +127,7 @@ class CartController extends Controller
                 ]);
 
                 // Update product stock
-                $product = Product::find($item->product_id);
-                $product->decrement('stock', $item->quantity);
+                $item->product->decrement('stock', $item->quantity);
             }
 
             // Clear cart
@@ -158,10 +135,24 @@ class CartController extends Controller
 
             DB::commit();
 
-            return redirect()->route('home')->with('success', 'Pembayaran berhasil');
+            // Redirect to success page (must be GET for Inertia)
+            return redirect()->route('payment.success', $transaction);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
+    }
+
+    // Show payment success page (GET)
+    public function paymentSuccess(Transaction $transaction)
+    {
+        return Inertia::render('PaymentSuccess', [
+            'transaction' => [
+                'id' => $transaction->id,
+                'total' => $transaction->total,
+                'total_formatted' => 'Rp ' . number_format($transaction->total, 0, ',', '.'),
+                'date' => $transaction->created_at->format('d F Y'),
+            ],
+        ]);
     }
 }
