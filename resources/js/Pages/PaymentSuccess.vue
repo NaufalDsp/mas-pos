@@ -12,25 +12,9 @@ const props = defineProps({
 
 const cartItems = ref([]);
 </script>
-<style scoped>
-@keyframes ping {
-
-    75%,
-    100% {
-        transform: scale(2);
-        opacity: 0;
-    }
-}
-
-.animate-ping {
-    animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-</style>
-
 <template>
 
     <Head title="Pembayaran Sukses" />
-
     <div class="p-6 bg-gray-100 min-h-screen">
         <!-- Header -->
         <header class="bg-white shadow rounded-lg p-6 mb-6">
@@ -109,12 +93,9 @@ const cartItems = ref([]);
         <div class="flex items-center justify-center py-12">
             <div class="max-w-md w-full">
                 <!-- Success Card -->
-                <div class="bg-white rounded-3xl shadow-2xl p-8 text-center">
+                <div class="bg-white rounded-2xl p-6 text-center">
                     <!-- Success Image with Animation -->
-                    <div class="mb-6 relative flex items-center justify-center">
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <div class="w-32 h-32 bg-green-100 rounded-full animate-ping opacity-20"></div>
-                        </div>
+                    <div class="mb-2 relative flex items-center justify-center">
                         <div class="relative">
                             <img src="/Sucess.png" alt="Success" class="w-40 h-40 object-contain" />
                         </div>
@@ -122,23 +103,22 @@ const cartItems = ref([]);
 
                     <!-- Success Message -->
                     <h1 class="text-2xl font-bold text-green-600 mb-2">Pembayaran Sukses</h1>
-                    <p class="text-gray-600 mb-6">Transaksi Anda telah berhasil diproses</p>
+                    <p class="text-gray-600 mb-4">Transaksi Anda telah berhasil diproses</p>
 
                     <!-- Transaction Details -->
-                    <div class="bg-gray-50 rounded-2xl p-6 mb-6">
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-sm text-gray-600">Total</span>
-                            <span class="text-2xl font-bold text-gray-900">{{ transaction.total_formatted }}</span>
+                    <div class="bg-gray-50 rounded-2xl p-6 mb-1 text-center">
+                        <div class="mb-4">
+                            <div class="text-sm text-gray-400 mb-1">Total</div>
+                            <div class="text-xl font-bold text-gray-900">{{ transaction.total_formatted }}</div>
                         </div>
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="text-gray-600">Tanggal</span>
-                            <span class="text-gray-900 font-medium">{{ transaction.date }}</span>
+                        <div>
+                            <div class="text-gray-400 font-medium">{{ transaction.date }}</div>
                         </div>
                     </div>
 
                     <!-- Action Button -->
                     <Link :href="route('home')"
-                        class="inline-flex items-center justify-center w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-[1.02] shadow-lg">
+                        class="inline-flex items-center justify-center w-full px-4 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-[1.0] shadow-lg">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M10 19l-7-7m0 0l7-7m-7 7h18" />
