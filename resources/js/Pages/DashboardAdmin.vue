@@ -397,7 +397,7 @@ onMounted(() => {
                                 <span class="font-bold">{{ option.label }}</span>
                                 <span class="text-xs mt-1"
                                     :class="selectedPeriod === option.value ? 'opacity-90' : 'opacity-70'">{{
-                                    option.description }}</span>
+                                        option.description }}</span>
                             </div>
                         </button>
                     </div>

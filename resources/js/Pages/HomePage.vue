@@ -1,9 +1,8 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
-import { ref as _ref, onMounted as _onMounted, onBeforeUnmount as _onBeforeUnmount, nextTick as _nextTick } from 'vue';
 
 const props = defineProps({
   products: { type: Array, default: () => [] },
@@ -15,6 +14,8 @@ const props = defineProps({
 
 const searchTerm = ref('');
 const selectedCategoryId = ref(null);
+const showDeleteModal = ref(false);
+const productToDelete = ref(null);
 
 const formatCurrency = (value) => {
   if (typeof value === 'string' && value.trim().startsWith('Rp')) return value;
@@ -44,85 +45,62 @@ const addToCart = (product) => {
   router.post(route('cart.store'), { product_id: product.id, qty: 1 }, { preserveScroll: true });
 };
 
-// --- Scrollable category list logic ---
-const scrollContainer = _ref(null);
-const showLeft = _ref(false);
-const showRight = _ref(false);
+const openDeleteModal = (product) => {
+  productToDelete.value = product;
+  showDeleteModal.value = true;
+};
 
-// cek posisi scroll -> atur showLeft/showRight
+const closeDeleteModal = () => {
+  showDeleteModal.value = false;
+  productToDelete.value = null;
+};
+
+const confirmDelete = () => {
+  if (productToDelete.value) {
+    router.delete(route('products.destroy', productToDelete.value.id), {
+      preserveScroll: true,
+      onSuccess: () => {
+        closeDeleteModal();
+      }
+    });
+  }
+};
+
+// Simplified scrollable category logic
+const scrollContainer = ref(null);
+const showLeft = ref(false);
+const showRight = ref(false);
+
 const handleScroll = () => {
   const el = scrollContainer.value;
   if (!el) return;
-  // threshold kecil agar tidak fliker
-  const scLeft = el.scrollLeft;
-  const visible = el.clientWidth;
-  const total = el.scrollWidth;
-  showLeft.value = scLeft > 5;
-  showRight.value = scLeft + visible < total - 5;
+
+  const { scrollLeft, clientWidth, scrollWidth } = el;
+  showLeft.value = scrollLeft > 5;
+  showRight.value = scrollLeft + clientWidth < scrollWidth - 5;
 };
 
-// scroll amount: 70% of visible width (smooth)
 const scrollLeft = () => {
   const el = scrollContainer.value;
-  if (!el) return;
-  el.scrollBy({ left: -Math.round(el.clientWidth * 1.0), behavior: 'smooth' });
+  if (el) {
+    el.scrollBy({ left: -el.clientWidth, behavior: 'smooth' });
+  }
 };
 
 const scrollRight = () => {
   const el = scrollContainer.value;
-  if (!el) return;
-  el.scrollBy({ left: Math.round(el.clientWidth * 1.0), behavior: 'smooth' });
-};
-
-// Drag-to-scroll state and handlers
-const isDragging = _ref(false);
-const startX = _ref(0);
-const startScrollLeft = _ref(0);
-
-const onDragStart = (e) => {
-  const el = scrollContainer.value;
-  if (!el) return;
-  isDragging.value = true;
-  startX.value = e.clientX;
-  startScrollLeft.value = el.scrollLeft;
-};
-
-const onDragMove = (e) => {
-  if (!isDragging.value) return;
-  const el = scrollContainer.value;
-  if (!el) return;
-  e.preventDefault();
-  const dx = e.clientX - startX.value;
-  el.scrollLeft = startScrollLeft.value - dx;
-  handleScroll();
-};
-
-const onDragEnd = () => {
-  isDragging.value = false;
-};
-
-const onWheel = (e) => {
-  const el = scrollContainer.value;
-  if (!el) return;
-  // translate vertical wheel to horizontal scroll for better UX
-  if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-    e.preventDefault();
-    el.scrollBy({ left: e.deltaY, behavior: 'auto' });
-    handleScroll();
+  if (el) {
+    el.scrollBy({ left: el.clientWidth, behavior: 'smooth' });
   }
 };
 
-// inisialisasi & resize listener
-_onMounted(() => {
-  // kalau categories dimuat secara async dari backend, tunggu nextTick sedikit
-  _nextTick(() => handleScroll());
+onMounted(() => {
+  nextTick(() => handleScroll());
   window.addEventListener('resize', handleScroll);
-  // ensure drag ends even if mouse leaves the container
-  window.addEventListener('mouseup', onDragEnd);
 });
-_onBeforeUnmount(() => {
+
+onBeforeUnmount(() => {
   window.removeEventListener('resize', handleScroll);
-  window.removeEventListener('mouseup', onDragEnd);
 });
 </script>
 
@@ -135,17 +113,8 @@ _onBeforeUnmount(() => {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-
-/* drag-to-scroll cursors */
-.drag-scroll {
-  cursor: grab;
-  user-select: none;
-}
-
-.drag-scroll.dragging {
-  cursor: grabbing;
-}
 </style>
+
 <template>
 
   <Head title="Home" />
@@ -217,7 +186,7 @@ _onBeforeUnmount(() => {
         </div>
       </div>
 
-      <!-- Search + Kategori Scrollable (REPLACE THIS BLOCK) -->
+      <!-- Search + Kategori Scrollable -->
       <div class="flex items-center gap-2">
         <!-- Search (fixed size, tidak boleh menyusut) -->
         <div class="relative w-[272px] h-[32px] flex-shrink-0">
@@ -243,12 +212,10 @@ _onBeforeUnmount(() => {
           </svg>
         </button>
 
-        <!-- Scrollable category area (flex-1 agar menyesuaikan sisa lebar) -->
+        <!-- Scrollable category area -->
         <div class="relative flex-1 min-w-0">
-          <!-- actual scroll container -->
-          <div ref="scrollContainer" class="flex gap-2 overflow-x-auto no-scrollbar py-1 px-2 items-center drag-scroll"
-            :class="{ 'dragging': isDragging }" @scroll="handleScroll" @mousedown="onDragStart" @mousemove="onDragMove"
-            @mouseup="onDragEnd" @mouseleave="onDragEnd" @wheel="onWheel">
+          <div ref="scrollContainer" class="flex gap-2 overflow-x-auto no-scrollbar py-1 px-2 items-center"
+            @scroll="handleScroll">
             <button
               class="px-4 h-[32px] rounded-lg text-sm whitespace-nowrap flex items-center justify-center flex-shrink-0"
               :class="!selectedCategoryId ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'"
@@ -264,7 +231,7 @@ _onBeforeUnmount(() => {
             </button>
           </div>
 
-          <!-- Fade overlay kiri & kanan (tampil hanya saat overflow) -->
+          <!-- Fade overlays -->
           <div v-show="showLeft"
             class="pointer-events-none absolute left-0 top-0 h-full w-8 bg-gradient-to-r from-white to-transparent">
           </div>
@@ -274,8 +241,8 @@ _onBeforeUnmount(() => {
         </div>
 
         <!-- Tombol Scroll Kanan: berada di ujung kanan area -->
-        <button v-if="showRight" @click="scrollRight" class="h-[32px] w-8 flex items-center justify-center    shadow"
-          aria-label="Scroll right">
+        <button v-if="showRight" @click="scrollRight"
+          class="h-[32px] w-8 flex items-center justify-center bg-white rounded-md shadow" aria-label="Scroll right">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -288,14 +255,63 @@ _onBeforeUnmount(() => {
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-6 gap-x-9 mt-4">
       <div v-for="product in filteredProducts" :key="product.id || product.name"
         class="bg-white rounded-xl shadow p-2 flex flex-col w-[216px]">
-        <img :src="product.image_url || '/PepperoniChesse.png'" :alt="product.name"
-          class="w-full h-[177px] object-cover rounded-md mb-4" />
+        <div class="relative mb-4">
+          <img :src="product.image_url || '/PepperoniChesse.png'" :alt="product.name"
+            class="w-full h-[177px] object-cover rounded-md" />
+          <!-- Trash Icon -->
+          <button @click="openDeleteModal(product)"
+            class="absolute bottom-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-lg flex items-center justify-center shadow-lg transition"
+            aria-label="Hapus produk">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-4" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
         <h3 class="text-sm font-semibold text-gray-800">{{ product.name }}</h3>
         <p class="text-green-600 font-medium mb-3">{{ formatCurrency(product.price) }}</p>
         <button class="w-full py-2 px-3 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition"
           @click="addToCart(product)">
           + Keranjang
         </button>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center">
+      <!-- Overlay -->
+      <div class="absolute inset-0 bg-black bg-opacity-50" @click="closeDeleteModal"></div>
+
+      <!-- Modal Content -->
+      <div class="relative bg-white rounded-xl shadow-2xl w-[442px] h-[280px] z-10">
+        <!-- Icon Trash di Pojok Kiri Atas -->
+        <div class="absolute top-5 left-5">
+          <div class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center">
+            <img src="/Trash.png" alt="Trash" class="w-18 h-18" />
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="pt-20 px-5 text-left">
+          <h3 class="text-lg font-bold text-gray-800 pt-3 pb-1">Hapus Produk</h3>
+          <p class="text-sm text-gray-500 mb-10">
+            Apakah Anda yakin ingin menghapus produk ini?
+          </p>
+          <!-- Garis Batas -->
+          <div class="border-t border-gray-300 pt-4 pb-2 -mx-5"></div>
+
+          <div class="flex gap-3 pt-2">
+            <button @click="closeDeleteModal"
+              class="flex-1 py-2.5 px-4 bg-white border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium text-sm">
+              Batal
+            </button>
+            <button @click="confirmDelete"
+              class="flex-1 py-2.5 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-medium text-sm">
+              Hapus
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
