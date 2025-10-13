@@ -62,6 +62,18 @@ class ProductController extends Controller
         return redirect()->route('home')->with('success', 'Produk berhasil ditambahkan');
     }
 
+    public function destroy(Product $product)
+    {
+        // Delete image if exists
+        if ($product->image) {
+            Storage::disk('public')->delete($product->image);
+        }
+
+        $product->delete();
+
+        return redirect()->route('home')->with('success', 'Produk berhasil dihapus');
+    }
+
     public function index()
     {
         $products = Product::with('category')->get();
