@@ -260,7 +260,7 @@ onBeforeUnmount(() => {
             class="w-full h-[177px] object-cover rounded-md" />
           <!-- Trash Icon -->
           <button @click="openDeleteModal(product)"
-            class="absolute bottom-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-lg flex items-center justify-center shadow-lg transition"
+            class="absolute bottom-2 right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-md flex items-center justify-center shadow-lg transition"
             aria-label="Hapus produk">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-4" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
@@ -271,9 +271,13 @@ onBeforeUnmount(() => {
         </div>
         <h3 class="text-sm font-semibold text-gray-800">{{ product.name }}</h3>
         <p class="text-green-600 font-medium mb-3">{{ formatCurrency(product.price) }}</p>
-        <button class="w-full py-2 px-3 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition"
+        <button
+          class="w-full py-2 px-3 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition flex items-center justify-center gap-1"
           @click="addToCart(product)">
-          + Keranjang
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Keranjang
         </button>
       </div>
     </div>
