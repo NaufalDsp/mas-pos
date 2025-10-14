@@ -36,11 +36,14 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:categories,name'
+        ], [
+            'name.required' => 'Nama kategori wajib diisi',
+            'name.unique' => 'Kategori sudah tersedia'
         ]);
 
         Category::create($validated);
 
-        return redirect()->route('home')->with('success', 'Kategori berhasil ditambahkan');
+        return redirect()->back()->with('success', 'Kategori berhasil ditambahkan!');
     }
 
     public function index()
