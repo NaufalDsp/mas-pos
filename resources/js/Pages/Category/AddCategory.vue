@@ -1,12 +1,18 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
     totalTagihan: String,
     cartItemsCount: Number,
 });
+
+const page = usePage();
+const showToast = ref(false);
+const toastMessage = ref('');
+const toastType = ref('success'); // success or error
 
 // Inertia form helper
 const form = useForm({
@@ -18,6 +24,12 @@ const submitForm = () => {
         preserveScroll: true,
         onSuccess: () => {
             form.reset();
+            showToastNotification('Kategori berhasil ditambahkan!', 'success');
+        },
+        onError: (errors) => {
+            // Toast notification untuk error umum
+            showToastNotification('Kategori tidak dapat ditambahkan', 'error');
+            // Error message detail tetap ditampilkan di bawah form via form.errors.name
         }
     });
 };
@@ -26,6 +38,30 @@ const cancelForm = () => {
     form.reset();
     window.history.back();
 };
+
+const showToastNotification = (message, type = 'success') => {
+    toastMessage.value = message;
+    toastType.value = type;
+    showToast.value = true;
+
+    setTimeout(() => {
+        showToast.value = false;
+    }, 4000);
+};
+
+const closeToast = () => {
+    showToast.value = false;
+};
+
+// Watch for flash messages
+watch(() => page.props.flash, (flash) => {
+    if (flash?.success) {
+        showToastNotification(flash.success, 'success');
+    }
+    if (flash?.error) {
+        showToastNotification(flash.error, 'error');
+    }
+}, { deep: true });
 </script>
 
 <template>
@@ -115,7 +151,7 @@ const cancelForm = () => {
         </header>
 
         <!-- Form Tambah Kategori -->
-        <div class="flex items-center justify-center mt-20">
+        <div class="flex items-center justify-center mt-40">
             <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
                 <h2 class="text-xl font-bold text-gray-800 mb-6">Tambah Kategori</h2>
 
@@ -147,5 +183,49 @@ const cancelForm = () => {
                 </form>
             </div>
         </div>
+
+        <!-- Toast Notification -->
+        <transition enter-active-class="transform transition ease-out duration-300"
+            enter-from-class="translate-x-full opacity-0" enter-to-class="translate-x-0 opacity-100"
+            leave-active-class="transform transition ease-in duration-200" leave-from-class="translate-x-0 opacity-100"
+            leave-to-class="translate-x-full opacity-0">
+            <div v-if="showToast"
+                class="fixed top-36 right-6 z-50 w-[309px] h-[43px] shadow-lg rounded-lg overflow-hidden"
+                :class="toastType === 'success' ? 'bg-green-300 border-l-4 border-green-500' : 'bg-red-200 border-l-4 border-red-800'">
+                <!-- Adjust padding and alignment -->
+                <div class="h-full px-3 flex items-center">
+                    <!-- Icon - adjusted size -->
+                    <div class="flex-shrink-0">
+                        <svg v-if="toastType === 'success'" class="h-5 w-5 text-green-500" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <svg v-else class="h-5 w-5 text-red-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+
+                    <!-- Message - adjusted spacing -->
+                    <div class="ml-2 flex-1">
+                        <p class="text-xs font-medium leading-none"
+                            :class="toastType === 'success' ? 'text-green-800' : 'text-red-800'">
+                            {{ toastMessage }}
+                        </p>
+                    </div>
+
+                    <!-- Close Button -->
+                    <button @click="closeToast"
+                        class="ml-4 flex-shrink-0 inline-flex text-gray-400 hover:text-gray-500 focus:outline-none">
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </transition>
     </div>
 </template>
