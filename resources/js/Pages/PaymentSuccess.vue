@@ -94,7 +94,6 @@ const cartItems = ref([]);
             <div class="max-w-md w-full">
                 <!-- Success Card -->
                 <div class="bg-white rounded-2xl p-6 text-center">
-                    <!-- Success Image with Animation -->
                     <div class="mb-2 relative flex items-center justify-center">
                         <div class="relative">
                             <img src="/Sucess.png" alt="Success" class="w-40 h-40 object-contain" />
