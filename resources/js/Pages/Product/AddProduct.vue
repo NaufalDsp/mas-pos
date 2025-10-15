@@ -238,7 +238,7 @@ const cancelForm = () => {
                             </option>
                         </select>
                         <p v-if="form.errors.category_id" class="mt-1 text-sm text-red-600">{{ form.errors.category_id
-                        }}</p>
+                            }}</p>
                     </div>
 
                     <!-- Tombol Action -->
