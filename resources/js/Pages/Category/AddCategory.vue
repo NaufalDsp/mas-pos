@@ -207,6 +207,7 @@ watch(() => page.props.flash, (flash) => {
                         </svg>
                     </div>
 
+
                     <!-- Message - adjusted spacing -->
                     <div class="ml-2 flex-1">
                         <p class="text-xs font-medium leading-none"
@@ -214,6 +215,7 @@ watch(() => page.props.flash, (flash) => {
                             {{ toastMessage }}
                         </p>
                     </div>
+
 
                     <!-- Close Button -->
                     <button @click="closeToast"
