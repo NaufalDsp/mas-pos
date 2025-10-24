@@ -150,6 +150,7 @@ watch(() => page.props.flash, (flash) => {
             </div>
         </header>
 
+
         <!-- Form Tambah Kategori -->
         <div class="flex items-center justify-center mt-40">
             <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">

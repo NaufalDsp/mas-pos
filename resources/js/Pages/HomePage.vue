@@ -186,7 +186,9 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
+      
       <!-- Search + Kategori Scrollable -->
+       
       <div class="flex items-center gap-2">
         <!-- Search (fixed size, tidak boleh menyusut) -->
         <div class="relative w-[272px] h-[32px] flex-shrink-0">
