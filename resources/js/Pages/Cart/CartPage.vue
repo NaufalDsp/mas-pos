@@ -90,6 +90,7 @@ const checkout = () => {
                             </div>
                         </div>
 
+                        
                         <!-- Avatar -->
                         <div class="pl-4">
                             <Dropdown align="right" width="48">
