@@ -25,16 +25,19 @@ Route::middleware('guest')->group(function () {
     Route::post('/admin0', [AdminLoginController::class, 'store']);
 });
 
+
 // Admin (auth + admin, prefix admin)
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('admin.dashboard');
     Route::post('/logout', [AdminLoginController::class, 'destroy'])->name('admin.logout');
 });
 
+
 // User/Kasir (auth + verified) - both roles can access
 Route::middleware(['auth', 'verified'])->group(function () {
     // Home
     Route::get('/home', [HomeController::class, 'index'])->name('home');
+
 
     // Categories
     Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
@@ -47,6 +50,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 
+    
     // Cart
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::post('/cart/items', [CartController::class, 'addItem'])->name('cart.items.store');
