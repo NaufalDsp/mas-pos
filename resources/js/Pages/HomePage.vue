@@ -137,9 +137,6 @@ onBeforeUnmount(() => {
             class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
           + Tambah Produk
           </Link>
-
-
-          
           <div class="flex items-center divide-x-2 divide-gray-300">
             <div class="inline-flex items-center pr-4">
               <Link :href="route('cart')" aria-label="Keranjang"
