@@ -127,7 +127,6 @@ onBeforeUnmount(() => {
         <h1>
           <Link :href="route('home')" class="text-xl font-extrabold text-blue-600 hover:opacity-80">MASPOS</Link>
         </h1>
-
         <div class="flex items-center gap-3">
           <Link :href="route('categories.create')"
             class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
@@ -185,9 +184,9 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      
+
       <!-- Search + Kategori Scrollable -->
-       
+
       <div class="flex items-center gap-2">
         <!-- Search (fixed size, tidak boleh menyusut) -->
         <div class="relative w-[272px] h-[32px] flex-shrink-0">
