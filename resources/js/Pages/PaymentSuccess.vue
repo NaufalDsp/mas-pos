@@ -24,9 +24,6 @@ const cartItems = ref([]);
                     MASPOS
                     </Link>
                 </h1>
-
-                
-                
                 <div class="flex items-center gap-3">
                     <Link :href="route('categories.create')"
                         class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
