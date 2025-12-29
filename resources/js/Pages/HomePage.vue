@@ -116,9 +116,7 @@ onBeforeUnmount(() => {
 </style>
 
 <template>
-
   <Head title="Home" />
-
   <div class="p-6 bg-gray-100 min-h-screen">
     <!-- Header -->
     <header class="bg-white shadow rounded-lg p-6 mb-6">
