@@ -116,6 +116,7 @@ onBeforeUnmount(() => {
 </style>
 
 <template>
+
   <Head title="Home" />
   <div class="p-6 bg-gray-100 min-h-screen">
     <!-- Header -->
@@ -128,25 +129,25 @@ onBeforeUnmount(() => {
         <div class="flex items-center gap-3">
           <Link :href="route('categories.create')"
             class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
-          + Tambah Kategori
+            + Tambah Kategori
           </Link>
           <Link :href="route('products.create')"
             class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
-          + Tambah Produk
+            + Tambah Produk
           </Link>
           <div class="flex items-center divide-x-2 divide-gray-300">
             <div class="inline-flex items-center pr-4">
               <Link :href="route('cart')" aria-label="Keranjang"
                 class="relative z-10 px-4 py-2 bg-blue-600 text-white rounded-l-lg hover:bg-blue-700 transition flex items-center justify-center shadow-md">
-              <span
-                class="absolute -top-2 -right-1 bg-green-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
-                {{ props.cart_count }}
-              </span>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                stroke="currentColor" class="h-5 w-5">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
-              </svg>
+                <span
+                  class="absolute -top-2 -right-1 bg-green-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
+                  {{ props.cart_count }}
+                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                  stroke="currentColor" class="h-5 w-5">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                </svg>
               </Link>
               <div class="px-4 py-2 bg-blue-50 text-blue-700 rounded-r-lg text-sm font-semibold">
                 Total Tagihan {{ totalTagihan }}
@@ -184,7 +185,6 @@ onBeforeUnmount(() => {
 
 
       <!-- Search + Kategori Scrollable -->
-
       <div class="flex items-center gap-2">
         <!-- Search (fixed size, tidak boleh menyusut) -->
         <div class="relative w-[272px] h-[32px] flex-shrink-0">
