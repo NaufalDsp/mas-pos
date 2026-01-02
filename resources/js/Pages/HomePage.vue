@@ -220,7 +220,6 @@ onBeforeUnmount(() => {
               @click="selectedCategoryId = null">
               Semua
             </button>
-
             <button v-for="cat in props.categories" :key="cat.id"
               class="px-4 h-[32px] rounded-lg text-sm whitespace-nowrap flex items-center justify-center flex-shrink-0"
               :class="selectedCategoryId === cat.id ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'"
