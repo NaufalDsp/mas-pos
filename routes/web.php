@@ -49,7 +49,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-
     
     // Cart
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
