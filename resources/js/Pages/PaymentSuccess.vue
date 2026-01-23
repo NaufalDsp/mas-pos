@@ -13,7 +13,6 @@ const props = defineProps({
 const cartItems = ref([]);
 </script>
 <template>
-
     <Head title="Pembayaran Sukses" />
     <div class="p-6 bg-gray-100 min-h-screen">
         <!-- Header -->
