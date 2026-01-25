@@ -195,7 +195,6 @@ onBeforeUnmount(() => {
             <circle cx="11" cy="11" r="7" stroke-width="2" />
             <path d="M21 21l-4.35-4.35" stroke-width="2" stroke-linecap="round" />
           </svg>
-
           <input type="text" placeholder="Cari nama produk ..."
             class="w-full h-full border rounded-lg pl-8 pr-2 text-sm focus:outline-none focus:ring focus:ring-blue-300"
             v-model="searchTerm" />
