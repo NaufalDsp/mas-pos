@@ -38,7 +38,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Home
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-
     // Categories
     Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
