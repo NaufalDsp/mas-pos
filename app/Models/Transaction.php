@@ -11,11 +11,18 @@ class Transaction extends Model
 
     protected $fillable = [
         'user_id',
-        'total'
+        'invoice_code',
+        'total',
+        'payment_method',
+        'pay_amount',
+        'change_amount',
+        'notes',
     ];
 
     protected $casts = [
         'total' => 'decimal:2',
+        'pay_amount' => 'decimal:2',
+        'change_amount' => 'decimal:2',
     ];
 
     // Relationship: Transaction belongs to User

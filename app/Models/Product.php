@@ -12,8 +12,10 @@ class Product extends Model
 
     protected $fillable = [
         'name',
+        'sku',
         'category_id',
         'price',
+        'cost_price',
         'stock',
         'description',
         'image'
@@ -21,6 +23,7 @@ class Product extends Model
 
     protected $casts = [
         'price' => 'decimal:2',
+        'cost_price' => 'decimal:2',
     ];
 
     protected $appends = ['image_url']; // Automatically append to JSON
