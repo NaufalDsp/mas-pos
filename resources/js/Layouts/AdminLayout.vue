@@ -96,12 +96,16 @@ const navigation = [
                 <!-- Brand Header -->
                 <div class="h-16 flex items-center justify-between px-6 border-b border-slate-800">
                     <Link :href="route('admin.dashboard')" class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center font-black text-xl text-white shadow-lg shadow-emerald-500/20">
-                            P
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-blue-500 flex items-center justify-center font-black text-lg text-white shadow-md shadow-blue-500/20">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="3" width="20" height="14" rx="2" />
+                                <line x1="8" y1="21" x2="16" y2="21" />
+                                <line x1="12" y1="17" x2="12" y2="21" />
+                            </svg>
                         </div>
                         <div>
-                            <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">Mas POS</span>
-                            <span class="block text-[10px] font-semibold text-emerald-400 uppercase tracking-widest">Admin Backoffice</span>
+                            <span class="font-black text-lg tracking-tight bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent">MASPOS</span>
+                            <span class="block text-[10px] font-bold text-blue-400 uppercase tracking-widest">Admin Panel</span>
                         </div>
                     </Link>
                     <button
@@ -116,14 +120,14 @@ const navigation = [
 
                 <!-- Navigation Links -->
                 <nav class="p-4 space-y-1.5">
-                    <p class="px-3 pb-2 text-[11px] font-bold tracking-wider text-slate-500 uppercase">Menu Utama</p>
+                    <p class="px-3 pb-2 text-[11px] font-bold tracking-wider text-slate-500 uppercase">Navigasi Utama</p>
                     <Link
                         v-for="item in navigation"
                         :key="item.name"
                         :href="item.href"
                         class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-150"
                         :class="item.active
-                            ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
+                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
                             : 'text-slate-400 hover:text-white hover:bg-slate-800/60'"
                     >
                         <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -133,24 +137,24 @@ const navigation = [
                     </Link>
 
                     <div class="pt-4 pb-2 px-3">
-                        <p class="text-[11px] font-bold tracking-wider text-slate-500 uppercase">Aplikasi Kasir</p>
+                        <p class="text-[11px] font-bold tracking-wider text-slate-500 uppercase">Kasir</p>
                     </div>
                     <Link
                         :href="route('pos.index')"
-                        class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 border border-emerald-800/50 hover:bg-emerald-900/40 transition"
+                        class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm text-blue-400 hover:text-blue-300 bg-blue-950/40 border border-blue-800/50 hover:bg-blue-900/40 transition"
                     >
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
-                            <span>Buka Mesin Kasir</span>
+                            <span>Terminal Kasir</span>
                         </div>
-                        <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">POS</span>
+                        <span class="text-[11px] px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-300 font-bold">POS</span>
                     </Link>
                 </nav>
             </div>
 
-            <!-- User Footer Profile -->
+            <!-- User Profile Footer -->
             <div class="p-4 border-t border-slate-800">
                 <div class="flex items-center justify-between p-2 rounded-xl bg-slate-800/50">
                     <div class="flex items-center gap-3 min-w-0">
@@ -159,7 +163,7 @@ const navigation = [
                         </div>
                         <div class="min-w-0 flex-1">
                             <p class="text-xs font-semibold text-white truncate">{{ user?.name || 'Administrator' }}</p>
-                            <span class="inline-block text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                            <span class="inline-block text-[10px] font-bold uppercase tracking-wider text-blue-400">
                                 {{ user?.role === 'admin' ? 'Super Admin' : 'Kasir' }}
                             </span>
                         </div>
@@ -177,7 +181,7 @@ const navigation = [
             </div>
         </aside>
 
-        <!-- Main Content Area -->
+        <!-- Main Workspace -->
         <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
             <!-- Top Navbar -->
             <header class="h-16 bg-white border-b border-slate-200 sticky top-0 z-30 px-4 sm:px-8 flex items-center justify-between">
@@ -208,12 +212,12 @@ const navigation = [
 
                     <Link
                         :href="route('pos.index')"
-                        class="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition"
+                        class="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition"
                     >
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                         </svg>
-                        <span>Kasir POS</span>
+                        <span>Buka Kasir</span>
                     </Link>
                 </div>
             </header>
@@ -225,4 +229,3 @@ const navigation = [
         </div>
     </div>
 </template>
-

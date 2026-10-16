@@ -103,7 +103,7 @@ const submitCheckout = () => {
         <!-- Header -->
         <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between">
             <Link :href="route('pos.index')" class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white font-black flex items-center justify-center">
+                <div class="w-9 h-9 rounded-xl bg-blue-600 text-white font-black flex items-center justify-center shadow-md shadow-blue-600/20">
                     P
                 </div>
                 <span class="font-extrabold text-base text-slate-900">Mas POS &bull; Keranjang</span>
@@ -124,7 +124,7 @@ const submitCheckout = () => {
                         <h2 class="text-lg font-black text-slate-900">Daftar Item Pesanan</h2>
                         <p class="text-xs text-slate-400 mt-0.5">{{ cartItemsCount }} item dalam keranjang</p>
                     </div>
-                    <span class="text-xl font-black text-emerald-600">{{ totalTagihan }}</span>
+                    <span class="text-xl font-black text-blue-600">{{ totalTagihan }}</span>
                 </div>
 
                 <div class="mt-4 divide-y divide-slate-100">
@@ -157,7 +157,7 @@ const submitCheckout = () => {
                         </div>
 
                         <div class="w-28 text-right font-black text-sm text-slate-900">
-                            {{ formatCurrency(item.subtotal) }}
+                            {{ formatCurrency(item.subtotal || (item.price * item.quantity)) }}
                         </div>
 
                         <button
@@ -183,7 +183,7 @@ const submitCheckout = () => {
                     </div>
                     <button
                         @click="openPayment"
-                        class="px-8 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-lg shadow-emerald-600/30 transition"
+                        class="px-8 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm shadow-lg shadow-blue-600/30 transition"
                     >
                         Lanjut ke Pembayaran &rarr;
                     </button>
@@ -203,35 +203,44 @@ const submitCheckout = () => {
                     </button>
                 </div>
 
-                <div class="my-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-center">
-                    <p class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Total yang Harus Dibayar</p>
-                    <h2 class="text-3xl font-black text-emerald-700 mt-1">{{ totalTagihan }}</h2>
+                <div class="my-4 p-4 rounded-2xl bg-blue-50 border border-blue-100 text-center">
+                    <p class="text-xs font-bold text-blue-800 uppercase tracking-wider">Total yang Harus Dibayar</p>
+                    <h2 class="text-3xl font-black text-blue-700 mt-1">{{ totalTagihan }}</h2>
                 </div>
 
                 <div class="grid grid-cols-3 gap-2 p-1 bg-slate-100 rounded-2xl mb-4 text-xs font-bold">
                     <button
                         type="button"
                         @click="paymentMethod = 'cash'"
-                        class="py-2.5 rounded-xl transition"
+                        class="py-2.5 rounded-xl transition inline-flex items-center justify-center gap-1.5"
                         :class="paymentMethod === 'cash' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'"
                     >
-                        💵 Tunai
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span>Tunai</span>
                     </button>
                     <button
                         type="button"
                         @click="paymentMethod = 'qris'"
-                        class="py-2.5 rounded-xl transition"
+                        class="py-2.5 rounded-xl transition inline-flex items-center justify-center gap-1.5"
                         :class="paymentMethod === 'qris' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'"
                     >
-                        📱 QRIS
+                        <svg class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                        </svg>
+                        <span>QRIS</span>
                     </button>
                     <button
                         type="button"
                         @click="paymentMethod = 'transfer'"
-                        class="py-2.5 rounded-xl transition"
+                        class="py-2.5 rounded-xl transition inline-flex items-center justify-center gap-1.5"
                         :class="paymentMethod === 'transfer' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'"
                     >
-                        💳 Transfer
+                        <svg class="w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                        <span>Transfer</span>
                     </button>
                 </div>
 
@@ -242,7 +251,7 @@ const submitCheckout = () => {
                             v-model="cashAmount"
                             type="number"
                             min="0"
-                            class="w-full py-2.5 px-3 text-base font-black rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                            class="w-full py-2.5 px-3 text-base font-black rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                         />
                     </div>
 
@@ -254,7 +263,7 @@ const submitCheckout = () => {
 
                     <div
                         class="p-3.5 rounded-2xl flex items-center justify-between font-bold"
-                        :class="isCashEnough ? 'bg-emerald-50 text-emerald-900 border border-emerald-200' : 'bg-rose-50 text-rose-900 border border-rose-200'"
+                        :class="isCashEnough ? 'bg-blue-50 text-blue-900 border border-blue-200' : 'bg-rose-50 text-rose-900 border border-rose-200'"
                     >
                         <span>{{ isCashEnough ? 'Kembalian:' : 'Uang Kurang:' }}</span>
                         <span class="text-base font-black">
@@ -286,7 +295,7 @@ const submitCheckout = () => {
                         type="button"
                         @click="submitCheckout"
                         :disabled="checkoutProcessing || (!isCashEnough && paymentMethod === 'cash')"
-                        class="px-6 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md disabled:opacity-50"
+                        class="px-6 py-2.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/25 disabled:opacity-50"
                     >
                         {{ checkoutProcessing ? 'Memproses...' : 'Selesaikan Transaksi &rarr;' }}
                     </button>

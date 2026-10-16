@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
-import { Head, Link, router, usePage, useForm } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import ToastNotification from '@/Components/ToastNotification.vue';
 
 const props = defineProps({
@@ -63,7 +63,6 @@ const handleSearchEnter = () => {
     const term = searchTerm.value.trim().toLowerCase();
     if (!term) return;
 
-    // Look for exact SKU match or exact name match
     const match = props.products.find(
         (p) => p.sku?.toLowerCase() === term || p.name?.toLowerCase() === term
     );
@@ -218,7 +217,7 @@ const logout = () => {
 </script>
 
 <template>
-    <Head title="Mesin Kasir POS - Mas POS" />
+    <Head title="Terminal Kasir - Mas POS" />
 
     <div class="h-screen flex flex-col bg-slate-100 overflow-hidden font-sans">
         <ToastNotification />
@@ -227,18 +226,22 @@ const logout = () => {
         <header class="h-14 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between shrink-0 z-20">
             <!-- Left: Store Branding -->
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center font-black text-lg text-white shadow-md shadow-emerald-500/20">
-                    P
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-blue-500 flex items-center justify-center font-bold text-white shadow-md shadow-blue-500/20">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2" />
+                        <line x1="8" y1="21" x2="16" y2="21" />
+                        <line x1="12" y1="17" x2="12" y2="21" />
+                    </svg>
                 </div>
                 <div>
-                    <h1 class="font-extrabold text-base tracking-tight text-slate-900 leading-none">Mas POS</h1>
-                    <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Terminal Kasir</span>
+                    <h1 class="font-black text-base tracking-tight text-slate-900 leading-none">MASPOS</h1>
+                    <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Terminal Kasir</span>
                 </div>
             </div>
 
             <!-- Middle: Live Date & Clock -->
             <div class="hidden md:flex items-center gap-2 text-xs font-semibold text-slate-600 bg-slate-100 px-3.5 py-1.5 rounded-full border border-slate-200">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
                 <span>{{ currentTime }}</span>
             </div>
 
@@ -260,7 +263,7 @@ const logout = () => {
 
                 <!-- Cashier Profile Pill -->
                 <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1 rounded-full">
-                    <div class="w-6 h-6 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center">
+                    <div class="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center">
                         {{ authUser?.name ? authUser.name.charAt(0).toUpperCase() : 'K' }}
                     </div>
                     <span class="text-xs font-bold text-slate-800">{{ authUser?.name || 'Kasir' }}</span>
@@ -270,7 +273,7 @@ const logout = () => {
                 <button
                     @click="logout"
                     class="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
-                    title="Keluar / Ganti Akun"
+                    title="Keluar"
                 >
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -293,7 +296,7 @@ const logout = () => {
                             type="text"
                             placeholder="Cari produk atau scan barcode SKU... (Tekan F2)"
                             @keydown.enter="handleSearchEnter"
-                            class="w-full pl-10 pr-24 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-sm transition"
+                            class="w-full pl-10 pr-24 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-sm transition"
                         />
                         <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -309,7 +312,7 @@ const logout = () => {
                             @click="selectedCategoryId = null"
                             class="px-3.5 py-1.5 rounded-xl font-bold whitespace-nowrap transition text-xs shadow-sm"
                             :class="selectedCategoryId === null
-                                ? 'bg-slate-900 text-white shadow-slate-900/20'
+                                ? 'bg-blue-600 text-white shadow-blue-600/20'
                                 : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'"
                         >
                             Semua Menu ({{ products.length }})
@@ -320,7 +323,7 @@ const logout = () => {
                             @click="selectedCategoryId = cat.id"
                             class="px-3.5 py-1.5 rounded-xl font-bold whitespace-nowrap transition text-xs shadow-sm"
                             :class="selectedCategoryId === cat.id
-                                ? 'bg-emerald-600 text-white shadow-emerald-600/20'
+                                ? 'bg-blue-600 text-white shadow-blue-600/20'
                                 : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'"
                         >
                             {{ cat.name }} ({{ cat.products_count || 0 }})
@@ -337,7 +340,7 @@ const logout = () => {
                             @click="addToCart(product)"
                             class="bg-white rounded-2xl p-3 border border-slate-200/80 shadow-sm flex flex-col justify-between transition-all duration-150 select-none group"
                             :class="product.stock > 0
-                                ? 'hover:shadow-md hover:border-emerald-500/50 cursor-pointer active:scale-[0.98]'
+                                ? 'hover:shadow-md hover:border-blue-400 cursor-pointer active:scale-[0.98]'
                                 : 'opacity-60 cursor-not-allowed bg-slate-50'"
                         >
                             <!-- Image & Badge Container -->
@@ -346,16 +349,16 @@ const logout = () => {
                                     :src="product.image_url"
                                     :alt="product.name"
                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                                    @error="(e) => e.target.src = 'https://placehold.co/200x200?text=Produk'"
+                                    @error="(e) => e.target.src = '/PepperoniChesse.png'"
                                 />
                                 <!-- Stock Badge Overlay -->
                                 <div class="absolute top-2 right-2">
                                     <span
-                                        class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm"
+                                        class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm"
                                         :class="{
                                             'bg-rose-600 text-white': product.stock <= 0,
                                             'bg-amber-500 text-white': product.stock > 0 && product.stock <= 5,
-                                            'bg-emerald-600 text-white': product.stock > 5
+                                            'bg-blue-600 text-white': product.stock > 5
                                         }"
                                     >
                                         {{ product.stock <= 0 ? 'Habis' : 'Stok: ' + product.stock }}
@@ -373,14 +376,14 @@ const logout = () => {
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                                     {{ product.category?.name || 'Umum' }}
                                 </span>
-                                <h3 class="font-bold text-slate-900 text-xs line-clamp-2 leading-snug group-hover:text-emerald-700 transition">
+                                <h3 class="font-bold text-slate-900 text-xs line-clamp-2 leading-snug group-hover:text-blue-600 transition">
                                     {{ product.name }}
                                 </h3>
                             </div>
 
                             <!-- Price and Add Button -->
                             <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-100">
-                                <span class="font-extrabold text-xs text-slate-900">
+                                <span class="font-bold text-xs text-slate-900">
                                     {{ formatCurrency(product.price) }}
                                 </span>
                                 <button
@@ -388,7 +391,7 @@ const logout = () => {
                                     :disabled="product.stock <= 0"
                                     class="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs transition"
                                     :class="product.stock > 0
-                                        ? 'bg-emerald-50 text-emerald-700 group-hover:bg-emerald-600 group-hover:text-white'
+                                        ? 'bg-blue-50 text-blue-700 group-hover:bg-blue-600 group-hover:text-white'
                                         : 'bg-slate-100 text-slate-300'"
                                 >
                                     +
@@ -412,9 +415,11 @@ const logout = () => {
             <aside class="w-full lg:w-[380px] xl:w-[420px] bg-white flex flex-col shrink-0 border-l border-slate-200 z-10 shadow-xl lg:shadow-none">
                 <!-- Cart Header -->
                 <div class="p-4 border-b border-slate-200 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-xs">
-                            🛒
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
                         </div>
                         <div>
                             <h2 class="font-bold text-sm text-slate-900 leading-tight">Keranjang Belanja</h2>
@@ -440,8 +445,9 @@ const logout = () => {
                         <div class="min-w-0 flex-1">
                             <h4 class="font-bold text-xs text-slate-900 truncate">{{ item.product?.name }}</h4>
                             <p class="text-[11px] text-slate-400 mt-0.5">{{ formatCurrency(item.price) }} / unit</p>
-                            <span class="text-xs font-black text-emerald-700 block mt-1">
-                                {{ formatCurrency(item.subtotal) }}
+                            <!-- Dual safeguard for accurate subtotal -->
+                            <span class="text-xs font-black text-blue-600 block mt-1">
+                                {{ formatCurrency(item.subtotal || (item.price * item.quantity)) }}
                             </span>
                         </div>
 
@@ -453,7 +459,7 @@ const logout = () => {
                             >
                                 -
                             </button>
-                            <span class="w-8 text-center font-black text-xs text-slate-900">{{ item.quantity }}</span>
+                            <span class="w-8 text-center font-bold text-xs text-slate-900">{{ item.quantity }}</span>
                             <button
                                 @click="updateItemQty(item, 1)"
                                 :disabled="item.quantity >= item.product?.stock"
@@ -491,16 +497,16 @@ const logout = () => {
                 <div class="p-4 border-t border-slate-200 bg-slate-50 space-y-3">
                     <div class="space-y-1.5 text-xs text-slate-500">
                         <div class="flex justify-between">
-                            <span>Subtotal Item:</span>
+                            <span>Subtotal:</span>
                             <span class="font-bold text-slate-800">{{ cart_total_formatted }}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span>Pajak & Layanan:</span>
-                            <span class="font-semibold text-emerald-600">Rp 0 (Termasuk)</span>
+                            <span>Pajak:</span>
+                            <span class="font-semibold text-blue-600">Rp 0 (Termasuk)</span>
                         </div>
                         <div class="flex justify-between text-base font-black text-slate-900 pt-2 border-t border-slate-200">
-                            <span>TOTAL TAGIHAN:</span>
-                            <span class="text-emerald-600">{{ cart_total_formatted }}</span>
+                            <span>TOTAL:</span>
+                            <span class="text-blue-600">{{ cart_total_formatted }}</span>
                         </div>
                     </div>
 
@@ -508,7 +514,7 @@ const logout = () => {
                     <button
                         @click="openPayment"
                         :disabled="!cartItems.length"
-                        class="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm flex items-center justify-between shadow-lg shadow-emerald-600/30 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                        class="w-full py-3.5 px-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm flex items-center justify-between shadow-lg shadow-blue-600/30 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                     >
                         <div class="flex items-center gap-2">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -516,7 +522,7 @@ const logout = () => {
                             </svg>
                             <span>Bayar Sekarang</span>
                         </div>
-                        <span class="px-2 py-0.5 rounded-lg bg-emerald-700/60 text-xs font-mono">
+                        <span class="px-2 py-0.5 rounded-lg bg-blue-700 text-xs font-mono">
                             F8
                         </span>
                     </button>
@@ -530,7 +536,7 @@ const logout = () => {
                 <!-- Modal Header -->
                 <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                     <div>
-                        <h3 class="font-extrabold text-base text-slate-900">Pembayaran Kasir</h3>
+                        <h3 class="font-bold text-base text-slate-900">Pembayaran Kasir</h3>
                         <p class="text-xs text-slate-400 mt-0.5">Pilih metode bayar & selesaikan nota</p>
                     </div>
                     <button @click="showPaymentModal = false" class="text-slate-400 hover:text-slate-600">
@@ -541,9 +547,9 @@ const logout = () => {
                 </div>
 
                 <!-- Total Display -->
-                <div class="my-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-center">
-                    <p class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Total yang Harus Dibayar</p>
-                    <h2 class="text-3xl font-black text-emerald-700 mt-1">{{ cart_total_formatted }}</h2>
+                <div class="my-4 p-4 rounded-2xl bg-blue-50 border border-blue-100 text-center">
+                    <p class="text-xs font-bold text-blue-800 uppercase tracking-wider">Total yang Harus Dibayar</p>
+                    <h2 class="text-3xl font-black text-blue-700 mt-1">{{ cart_total_formatted }}</h2>
                 </div>
 
                 <!-- Payment Methods Tabs -->
@@ -551,32 +557,41 @@ const logout = () => {
                     <button
                         type="button"
                         @click="paymentMethod = 'cash'"
-                        class="py-2.5 rounded-xl transition flex flex-col items-center gap-1"
+                        class="py-2.5 rounded-xl transition flex flex-col items-center gap-1.5"
                         :class="paymentMethod === 'cash'
-                            ? 'bg-white text-slate-900 shadow-sm'
+                            ? 'bg-white text-blue-700 shadow-sm'
                             : 'text-slate-500 hover:text-slate-900'"
                     >
-                        <span>💵 Tunai</span>
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span>Tunai</span>
                     </button>
                     <button
                         type="button"
                         @click="paymentMethod = 'qris'"
-                        class="py-2.5 rounded-xl transition flex flex-col items-center gap-1"
+                        class="py-2.5 rounded-xl transition flex flex-col items-center gap-1.5"
                         :class="paymentMethod === 'qris'
-                            ? 'bg-white text-slate-900 shadow-sm'
+                            ? 'bg-white text-blue-700 shadow-sm'
                             : 'text-slate-500 hover:text-slate-900'"
                     >
-                        <span>📱 QRIS</span>
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                        </svg>
+                        <span>QRIS</span>
                     </button>
                     <button
                         type="button"
                         @click="paymentMethod = 'transfer'"
-                        class="py-2.5 rounded-xl transition flex flex-col items-center gap-1"
+                        class="py-2.5 rounded-xl transition flex flex-col items-center gap-1.5"
                         :class="paymentMethod === 'transfer'
-                            ? 'bg-white text-slate-900 shadow-sm'
+                            ? 'bg-white text-blue-700 shadow-sm'
                             : 'text-slate-500 hover:text-slate-900'"
                     >
-                        <span>💳 Transfer</span>
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                        <span>Transfer</span>
                     </button>
                 </div>
 
@@ -589,7 +604,7 @@ const logout = () => {
                             type="number"
                             min="0"
                             placeholder="Contoh: 50000"
-                            class="w-full py-2.5 px-3 text-base font-black rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                            class="w-full py-2.5 px-3 text-base font-black rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                         />
                     </div>
 
@@ -646,7 +661,7 @@ const logout = () => {
                     <div
                         class="p-3.5 rounded-2xl flex items-center justify-between font-bold"
                         :class="isCashEnough
-                            ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
+                            ? 'bg-blue-50 text-blue-900 border border-blue-200'
                             : 'bg-rose-50 text-rose-900 border border-rose-200'"
                     >
                         <span>{{ isCashEnough ? 'Kembalian:' : 'Uang Kurang:' }}</span>
@@ -677,7 +692,7 @@ const logout = () => {
                     <div class="p-2.5 bg-white rounded-xl border border-slate-200 flex justify-between items-center">
                         <div>
                             <p class="font-black text-slate-900">BCA: 887-092-1234</p>
-                            <p class="text-[10px] text-slate-400">a.n. MAS POS RETAIL</p>
+                            <p class="text-[10px] text-slate-400">a.n. MASPOS</p>
                         </div>
                         <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700">Bank Transfer</span>
                     </div>
@@ -690,7 +705,7 @@ const logout = () => {
                         v-model="notes"
                         type="text"
                         placeholder="Contoh: Meja 05 / Pelanggan Budi"
-                        class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                        class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                     />
                 </div>
 
@@ -707,7 +722,7 @@ const logout = () => {
                         type="button"
                         @click="submitCheckout"
                         :disabled="checkoutProcessing || (!isCashEnough && paymentMethod === 'cash')"
-                        class="px-6 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="px-6 py-2.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20 transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {{ checkoutProcessing ? 'Memproses...' : 'Selesaikan Transaksi &rarr;' }}
                     </button>

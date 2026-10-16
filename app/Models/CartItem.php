@@ -18,7 +18,10 @@ class CartItem extends Model
 
     protected $casts = [
         'price' => 'decimal:2',
+        'quantity' => 'integer',
     ];
+
+    protected $appends = ['subtotal'];
 
     // Relationship: CartItem belongs to Cart
     public function cart()
@@ -35,6 +38,6 @@ class CartItem extends Model
     // Helper method: Get subtotal
     public function getSubtotalAttribute()
     {
-        return $this->price * $this->quantity;
+        return (float) ($this->price * $this->quantity);
     }
 }

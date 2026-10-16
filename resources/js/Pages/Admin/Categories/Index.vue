@@ -94,7 +94,7 @@ const confirmDelete = () => {
     <AdminLayout title="Kategori Menu & Produk">
         <template #header>
             <div>
-                <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">Kategori Produk</h1>
+                <h1 class="text-xl font-bold text-slate-900 tracking-tight">Kategori Produk</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Kelompokkan produk dan menu untuk memudahkan navigasi kasir.</p>
             </div>
         </template>
@@ -107,7 +107,7 @@ const confirmDelete = () => {
                         v-model="search"
                         type="text"
                         placeholder="Cari nama kategori..."
-                        class="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                        class="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                     />
                     <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -116,7 +116,7 @@ const confirmDelete = () => {
 
                 <button
                     @click="openAddModal"
-                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 transition"
+                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20 transition"
                 >
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -143,20 +143,22 @@ const confirmDelete = () => {
                                 class="hover:bg-slate-50/80 transition"
                             >
                                 <td class="px-6 py-4 flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs">
-                                        🏷️
+                                    <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center font-bold text-xs">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                        </svg>
                                     </div>
                                     <span class="font-bold text-slate-900 text-sm">{{ cat.name }}</span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-slate-100 text-slate-800">
+                                    <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-slate-100 text-slate-800">
                                         {{ cat.products_count || 0 }} Produk
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-right space-x-2">
                                     <button
                                         @click="openEditModal(cat)"
-                                        class="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition"
+                                        class="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition"
                                         title="Edit Kategori"
                                     >
                                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -197,7 +199,7 @@ const confirmDelete = () => {
                             v-html="link.label"
                             class="px-3 py-1 text-xs rounded-lg font-medium transition"
                             :class="link.active
-                                ? 'bg-emerald-600 text-white font-bold'
+                                ? 'bg-blue-600 text-white font-bold'
                                 : link.url
                                     ? 'text-slate-600 hover:bg-slate-100'
                                     : 'text-slate-300 cursor-not-allowed'"
@@ -211,7 +213,7 @@ const confirmDelete = () => {
         <div v-if="showAddModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
             <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200">
                 <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-                    <h3 class="font-extrabold text-base text-slate-900">Tambah Kategori Baru</h3>
+                    <h3 class="font-bold text-base text-slate-900">Tambah Kategori Baru</h3>
                     <button @click="showAddModal = false" class="text-slate-400 hover:text-slate-600">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -227,7 +229,7 @@ const confirmDelete = () => {
                             type="text"
                             required
                             placeholder="Contoh: Coffee & Latte"
-                            class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                            class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                         />
                         <p v-if="addForm.errors.name" class="text-rose-500 text-[11px] mt-1">{{ addForm.errors.name }}</p>
                     </div>
@@ -243,7 +245,7 @@ const confirmDelete = () => {
                         <button
                             type="submit"
                             :disabled="addForm.processing"
-                            class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md shadow-emerald-600/20"
+                            class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md shadow-blue-600/20"
                         >
                             {{ addForm.processing ? 'Menyimpan...' : 'Simpan Kategori' }}
                         </button>
@@ -256,7 +258,7 @@ const confirmDelete = () => {
         <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
             <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200">
                 <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-                    <h3 class="font-extrabold text-base text-slate-900">Edit Kategori</h3>
+                    <h3 class="font-bold text-base text-slate-900">Edit Kategori</h3>
                     <button @click="showEditModal = false" class="text-slate-400 hover:text-slate-600">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -271,7 +273,7 @@ const confirmDelete = () => {
                             v-model="editForm.name"
                             type="text"
                             required
-                            class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                            class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                         />
                         <p v-if="editForm.errors.name" class="text-rose-500 text-[11px] mt-1">{{ editForm.errors.name }}</p>
                     </div>
@@ -287,7 +289,7 @@ const confirmDelete = () => {
                         <button
                             type="submit"
                             :disabled="editForm.processing"
-                            class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-md shadow-indigo-600/20"
+                            class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md shadow-blue-600/20"
                         >
                             {{ editForm.processing ? 'Menyimpan...' : 'Perbarui' }}
                         </button>
@@ -304,7 +306,7 @@ const confirmDelete = () => {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                 </div>
-                <h3 class="font-extrabold text-base text-slate-900 mt-3">Hapus Kategori?</h3>
+                <h3 class="font-bold text-base text-slate-900 mt-3">Hapus Kategori?</h3>
                 <p class="text-xs text-slate-500 mt-1">
                     Anda yakin ingin menghapus kategori <strong>{{ categoryToDelete?.name }}</strong>? Produk dalam kategori ini akan menjadi tidak berkategori.
                 </p>
@@ -326,4 +328,3 @@ const confirmDelete = () => {
         </div>
     </AdminLayout>
 </template>
-

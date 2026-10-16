@@ -173,7 +173,7 @@ const calculateMargin = (price, cost) => {
     <AdminLayout title="Katalog Produk & Manajemen Stok">
         <template #header>
             <div>
-                <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">Katalog Produk & Inventori</h1>
+                <h1 class="text-xl font-bold text-slate-900 tracking-tight">Katalog Produk & Inventori</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Kelola data barang, harga beli/jual, margin laba, dan restock fisik.</p>
             </div>
         </template>
@@ -187,17 +187,21 @@ const calculateMargin = (price, cost) => {
                         <h4 class="text-2xl font-black text-slate-900 mt-1">{{ summary.total_products }}</h4>
                     </div>
                     <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center font-bold">
-                        📦
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex items-center justify-between">
                     <div>
                         <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Fisik Unit Stok</p>
-                        <h4 class="text-2xl font-black text-emerald-600 mt-1">{{ summary.total_stock }} <span class="text-xs text-slate-400 font-semibold">pcs</span></h4>
+                        <h4 class="text-2xl font-black text-blue-600 mt-1">{{ summary.total_stock }} <span class="text-xs text-slate-400 font-semibold">pcs</span></h4>
                     </div>
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                        📊
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
                     </div>
                 </div>
 
@@ -207,7 +211,9 @@ const calculateMargin = (price, cost) => {
                         <h4 class="text-2xl font-black text-rose-600 mt-1">{{ summary.low_stock_count }} <span class="text-xs text-slate-400 font-semibold">item</span></h4>
                     </div>
                     <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
-                        ⚠️
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
                     </div>
                 </div>
             </div>
@@ -221,7 +227,7 @@ const calculateMargin = (price, cost) => {
                             v-model="search"
                             type="text"
                             placeholder="Cari nama atau SKU..."
-                            class="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                            class="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                         />
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -231,7 +237,7 @@ const calculateMargin = (price, cost) => {
                     <!-- Category Filter -->
                     <select
                         v-model="selectedCategory"
-                        class="w-full py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                        class="w-full py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                     >
                         <option value="">Semua Kategori</option>
                         <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
@@ -240,7 +246,7 @@ const calculateMargin = (price, cost) => {
                     <!-- Stock Filter -->
                     <select
                         v-model="selectedStockFilter"
-                        class="w-full py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                        class="w-full py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                     >
                         <option value="">Semua Kondisi Stok</option>
                         <option value="low">Stok Menipis (1 - 5 unit)</option>
@@ -251,7 +257,7 @@ const calculateMargin = (price, cost) => {
                 <!-- Add Product Button -->
                 <button
                     @click="openAddModal"
-                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 transition"
+                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20 transition"
                 >
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -267,7 +273,7 @@ const calculateMargin = (price, cost) => {
                         <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[11px]">
                             <tr>
                                 <th class="px-6 py-3.5">Produk</th>
-                                <th class="px-6 py-3.5">SKU / Kode</th>
+                                <th class="px-6 py-3.5">SKU</th>
                                 <th class="px-6 py-3.5">Kategori</th>
                                 <th class="px-6 py-3.5">Harga Jual</th>
                                 <th class="px-6 py-3.5">Harga Beli (HPP)</th>
@@ -287,7 +293,7 @@ const calculateMargin = (price, cost) => {
                                         :src="product.image_url"
                                         :alt="product.name"
                                         class="w-10 h-10 rounded-xl object-cover bg-slate-100 border border-slate-200 shrink-0"
-                                        @error="(e) => e.target.src = 'https://placehold.co/100x100?text=Produk'"
+                                        @error="(e) => e.target.src = '/PepperoniChesse.png'"
                                     />
                                     <div>
                                         <p class="font-bold text-slate-900">{{ product.name }}</p>
@@ -309,18 +315,18 @@ const calculateMargin = (price, cost) => {
                                     {{ formatCurrency(product.cost_price || 0) }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700">
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 text-blue-700">
                                         +{{ calculateMargin(product.price, product.cost_price) }}%
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-2">
                                         <span
-                                            class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider"
+                                            class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider"
                                             :class="{
                                                 'bg-rose-100 text-rose-800': product.stock <= 0,
                                                 'bg-amber-100 text-amber-800': product.stock > 0 && product.stock <= 5,
-                                                'bg-emerald-100 text-emerald-800': product.stock > 5
+                                                'bg-blue-100 text-blue-800': product.stock > 5
                                             }"
                                         >
                                             {{ product.stock <= 0 ? 'Habis' : product.stock + ' Unit' }}
@@ -331,7 +337,7 @@ const calculateMargin = (price, cost) => {
                                     <!-- Restock Button -->
                                     <button
                                         @click="openRestockModal(product)"
-                                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 font-bold transition text-[11px]"
+                                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-blue-700 bg-blue-50 hover:bg-blue-100 font-bold transition text-[11px]"
                                         title="Tambah Stok"
                                     >
                                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -343,7 +349,7 @@ const calculateMargin = (price, cost) => {
                                     <!-- Edit Button -->
                                     <button
                                         @click="openEditModal(product)"
-                                        class="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition"
+                                        class="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition"
                                         title="Edit Produk"
                                     >
                                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -386,7 +392,7 @@ const calculateMargin = (price, cost) => {
                             v-html="link.label"
                             class="px-3 py-1 text-xs rounded-lg font-medium transition"
                             :class="link.active
-                                ? 'bg-emerald-600 text-white font-bold'
+                                ? 'bg-blue-600 text-white font-bold'
                                 : link.url
                                     ? 'text-slate-600 hover:bg-slate-100'
                                     : 'text-slate-300 cursor-not-allowed'"
@@ -400,7 +406,7 @@ const calculateMargin = (price, cost) => {
         <div v-if="showAddModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
             <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 my-8">
                 <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-                    <h3 class="font-extrabold text-base text-slate-900">Tambah Produk Baru</h3>
+                    <h3 class="font-bold text-base text-slate-900">Tambah Produk Baru</h3>
                     <button @click="showAddModal = false" class="text-slate-400 hover:text-slate-600">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -416,7 +422,7 @@ const calculateMargin = (price, cost) => {
                             type="text"
                             required
                             placeholder="Contoh: Kopi Susu Aren"
-                            class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                            class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                         />
                     </div>
 
@@ -424,20 +430,20 @@ const calculateMargin = (price, cost) => {
                         <div>
                             <div class="flex items-center justify-between mb-1">
                                 <label class="font-bold text-slate-700">SKU / Kode Barcode</label>
-                                <button type="button" @click="generateSku" class="text-[10px] text-emerald-600 font-bold hover:underline">Acak</button>
+                                <button type="button" @click="generateSku" class="text-[10px] text-blue-600 font-bold hover:underline">Acak</button>
                             </div>
                             <input
                                 v-model="addForm.sku"
                                 type="text"
                                 placeholder="PRD-1234"
-                                class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-mono"
+                                class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono"
                             />
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Kategori</label>
                             <select
                                 v-model="addForm.category_id"
-                                class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                                class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                             >
                                 <option value="">Pilih Kategori</option>
                                 <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
@@ -454,7 +460,7 @@ const calculateMargin = (price, cost) => {
                                 required
                                 min="0"
                                 placeholder="18000"
-                                class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-bold"
+                                class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-bold"
                             />
                         </div>
                         <div>
@@ -464,7 +470,7 @@ const calculateMargin = (price, cost) => {
                                 type="number"
                                 min="0"
                                 placeholder="12000"
-                                class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                                class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                             />
                         </div>
                         <div>
@@ -475,7 +481,7 @@ const calculateMargin = (price, cost) => {
                                 required
                                 min="0"
                                 placeholder="50"
-                                class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-bold"
+                                class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-bold"
                             />
                         </div>
                     </div>
@@ -486,7 +492,7 @@ const calculateMargin = (price, cost) => {
                             type="file"
                             accept="image/*"
                             @change="(e) => handleImageUpload(e, addForm)"
-                            class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700"
+                            class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700"
                         />
                     </div>
 
@@ -496,7 +502,7 @@ const calculateMargin = (price, cost) => {
                             v-model="addForm.description"
                             rows="2"
                             placeholder="Catatan porsi, bahan, atau varian..."
-                            class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                            class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                         ></textarea>
                     </div>
 
@@ -511,7 +517,7 @@ const calculateMargin = (price, cost) => {
                         <button
                             type="submit"
                             :disabled="addForm.processing"
-                            class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md shadow-emerald-600/20 disabled:opacity-50"
+                            class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md shadow-blue-600/20 disabled:opacity-50"
                         >
                             {{ addForm.processing ? 'Menyimpan...' : 'Simpan Produk' }}
                         </button>
@@ -524,7 +530,7 @@ const calculateMargin = (price, cost) => {
         <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
             <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 my-8">
                 <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-                    <h3 class="font-extrabold text-base text-slate-900">Edit Produk</h3>
+                    <h3 class="font-bold text-base text-slate-900">Edit Produk</h3>
                     <button @click="showEditModal = false" class="text-slate-400 hover:text-slate-600">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -539,7 +545,7 @@ const calculateMargin = (price, cost) => {
                             v-model="editForm.name"
                             type="text"
                             required
-                            class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                            class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                         />
                     </div>
 
@@ -549,14 +555,14 @@ const calculateMargin = (price, cost) => {
                             <input
                                 v-model="editForm.sku"
                                 type="text"
-                                class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-mono"
+                                class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-mono"
                             />
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Kategori</label>
                             <select
                                 v-model="editForm.category_id"
-                                class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                                class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                             >
                                 <option value="">Pilih Kategori</option>
                                 <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
@@ -602,7 +608,7 @@ const calculateMargin = (price, cost) => {
                             type="file"
                             accept="image/*"
                             @change="(e) => handleImageUpload(e, editForm)"
-                            class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700"
+                            class="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700"
                         />
                     </div>
 
@@ -617,7 +623,7 @@ const calculateMargin = (price, cost) => {
                         <button
                             type="submit"
                             :disabled="editForm.processing"
-                            class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-md shadow-indigo-600/20 disabled:opacity-50"
+                            class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md shadow-blue-600/20 disabled:opacity-50"
                         >
                             {{ editForm.processing ? 'Menyimpan...' : 'Perbarui Produk' }}
                         </button>
@@ -631,7 +637,7 @@ const calculateMargin = (price, cost) => {
             <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200">
                 <div class="flex items-center justify-between pb-4 border-b border-slate-100">
                     <div>
-                        <h3 class="font-extrabold text-base text-slate-900">Restock Barang</h3>
+                        <h3 class="font-bold text-base text-slate-900">Restock Barang</h3>
                         <p class="text-xs text-slate-400 mt-0.5">{{ productToRestock?.name }}</p>
                     </div>
                     <button @click="showRestockModal = false" class="text-slate-400 hover:text-slate-600">
@@ -662,7 +668,7 @@ const calculateMargin = (price, cost) => {
                                 type="number"
                                 required
                                 min="1"
-                                class="flex-1 py-2 px-3 text-center text-sm font-black rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                                class="flex-1 py-2 px-3 text-center text-sm font-bold rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                             />
                             <button
                                 type="button"
@@ -685,7 +691,7 @@ const calculateMargin = (price, cost) => {
                         <button
                             type="submit"
                             :disabled="restockForm.processing"
-                            class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md shadow-emerald-600/20"
+                            class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-md shadow-blue-600/20"
                         >
                             {{ restockForm.processing ? 'Menyimpan...' : 'Tambahkan Stok' }}
                         </button>
@@ -702,7 +708,7 @@ const calculateMargin = (price, cost) => {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                 </div>
-                <h3 class="font-extrabold text-base text-slate-900 mt-3">Hapus Produk?</h3>
+                <h3 class="font-bold text-base text-slate-900 mt-3">Hapus Produk?</h3>
                 <p class="text-xs text-slate-500 mt-1">
                     Anda yakin ingin menghapus <strong>{{ productToDelete?.name }}</strong>? Data produk akan dihapus dari katalog kasir.
                 </p>
@@ -724,4 +730,3 @@ const calculateMargin = (price, cost) => {
         </div>
     </AdminLayout>
 </template>
-

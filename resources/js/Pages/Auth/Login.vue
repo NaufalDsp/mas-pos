@@ -34,7 +34,7 @@ const submit = () => {
 
     <div class="space-y-6 max-w-md w-full">
       <div>
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold mb-3">
           <span>Point of Sale v2.0</span>
         </div>
         <h2 class="text-3xl font-black text-slate-900 tracking-tight">Selamat Datang di Mas POS</h2>
@@ -50,16 +50,22 @@ const submit = () => {
           <button
             type="button"
             @click="fillAdmin"
-            class="flex-1 py-1.5 px-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 font-bold transition text-[11px]"
+            class="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold transition text-[11px] shadow-sm"
           >
-            🛡️ Akun Admin
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span>Akun Admin</span>
           </button>
           <button
             type="button"
             @click="fillKasir"
-            class="flex-1 py-1.5 px-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 font-bold transition text-[11px]"
+            class="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition text-[11px] shadow-sm"
           >
-            🛒 Akun Kasir
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span>Akun Kasir</span>
           </button>
         </div>
       </div>
@@ -73,7 +79,7 @@ const submit = () => {
             v-model="form.username"
             placeholder="admin@maspos.com atau kasir@maspos.com"
             autocomplete="username"
-            class="w-full px-4 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
+            class="w-full px-4 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
             :class="{ 'border-rose-500': form.errors.username }"
             required
           />
@@ -93,7 +99,7 @@ const submit = () => {
               v-model="form.password"
               placeholder="Masukkan kata sandi..."
               autocomplete="current-password"
-              class="w-full px-4 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition pr-10"
+              class="w-full px-4 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition pr-10"
               :class="{ 'border-rose-500': form.errors.password }"
               required
             />
@@ -122,9 +128,9 @@ const submit = () => {
           <button
             type="submit"
             :disabled="form.processing"
-            class="w-full py-3 px-4 rounded-xl text-white font-extrabold text-xs bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition disabled:opacity-50"
+            class="w-full py-3 px-4 rounded-xl text-white font-extrabold text-xs bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20 transition disabled:opacity-50"
           >
-            {{ form.processing ? 'Memverifikasi...' : 'Masuk ke Sistem &rarr;' }}
+            {{ form.processing ? 'Memverifikasi...' : 'Masuk ke Sistem \u2192' }}
           </button>
         </div>
       </form>
