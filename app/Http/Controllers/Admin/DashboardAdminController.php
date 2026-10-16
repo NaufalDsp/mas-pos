@@ -18,17 +18,48 @@ class DashboardAdminController extends Controller
     {
         $period = $request->get('period', 'day'); // day, week, month, year
 
-        // Only users role
         $totalUsers = User::where('role', 'user')->count();
         $totalProducts = Product::count();
         $totalTransactions = Transaction::count();
-        $totalRevenue = Transaction::sum('total');
+        $totalRevenue = (float) Transaction::sum('total');
 
-        // Get chart data based on period
+        // Today's stats
+        $todayRevenue = (float) Transaction::whereDate('created_at', Carbon::today())->sum('total');
+        $todayTransactions = Transaction::whereDate('created_at', Carbon::today())->count();
+
+        // Estimated profit calculation (Revenue - HPP)
+        $totalCost = (float) DB::table('transaction_items')
+            ->join('products', 'transaction_items.product_id', '=', 'products.id')
+            ->select(DB::raw('SUM(transaction_items.quantity * COALESCE(products.cost_price, 0)) as cost'))
+            ->value('cost') ?? 0;
+        $estimatedProfit = max(0, $totalRevenue - $totalCost);
+
+        // Low stock alerts
+        $lowStockProducts = Product::where('stock', '<=', 5)
+            ->with('category')
+            ->orderBy('stock', 'asc')
+            ->limit(5)
+            ->get();
+        $lowStockCount = Product::where('stock', '<=', 5)->count();
+
+        // Chart data based on selected period
         $chartData = $this->getChartData($period);
 
-        // Top 5 products
-        $topProducts = Product::select('products.*', DB::raw('COALESCE(SUM(transaction_items.quantity), 0) as total_sold'))
+        // Payment method distribution
+        $paymentDistribution = Transaction::select('payment_method', DB::raw('COUNT(*) as count'), DB::raw('SUM(total) as sum'))
+            ->groupBy('payment_method')
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [
+                    $item->payment_method => [
+                        'count' => (int) $item->count,
+                        'total' => (float) $item->sum,
+                    ]
+                ];
+            });
+
+        // Top 5 best selling products
+        $topProducts = Product::select('products.*', DB::raw('COALESCE(SUM(transaction_items.quantity), 0) as total_sold'), DB::raw('COALESCE(SUM(transaction_items.subtotal), 0) as total_revenue'))
             ->leftJoin('transaction_items', 'products.id', '=', 'transaction_items.product_id')
             ->with('category')
             ->groupBy('products.id')
@@ -36,34 +67,29 @@ class DashboardAdminController extends Controller
             ->limit(5)
             ->get();
 
-        // Get users (kasir only)
-        $users = User::where('role', 'user')
-            ->select('id', 'name', 'email', 'created_at')
+        // Latest transactions
+        $recentTransactions = Transaction::with(['user:id,name', 'items.product:id,name'])
             ->latest()
+            ->limit(8)
             ->get();
 
-        // Get products
-        $products = Product::with('category')->get();
-
-        // Get transactions
-        $transactions = Transaction::with(['user', 'items.product'])
-            ->latest()
-            ->limit(50)
-            ->get();
-
-        return Inertia::render('DashboardAdmin', [
+        return Inertia::render('Admin/Dashboard', [
             'stats' => [
                 'total_users' => $totalUsers,
                 'total_products' => $totalProducts,
                 'total_transactions' => $totalTransactions,
                 'total_revenue' => $totalRevenue,
+                'today_revenue' => $todayRevenue,
+                'today_transactions' => $todayTransactions,
+                'estimated_profit' => $estimatedProfit,
+                'low_stock_count' => $lowStockCount,
             ],
             'chartData' => $chartData,
             'currentPeriod' => $period,
+            'paymentDistribution' => $paymentDistribution,
             'topProducts' => $topProducts,
-            'users' => $users,
-            'products' => $products,
-            'transactions' => $transactions,
+            'lowStockProducts' => $lowStockProducts,
+            'recentTransactions' => $recentTransactions,
         ]);
     }
 
@@ -71,16 +97,12 @@ class DashboardAdminController extends Controller
     {
         switch ($period) {
             case 'day':
-                // Last 7 days
                 return $this->getDailyData();
             case 'week':
-                // Last 8 weeks
                 return $this->getWeeklyData();
             case 'month':
-                // Last 12 months
                 return $this->getMonthlyData();
             case 'year':
-                // Last 5 years
                 return $this->getYearlyData();
             default:
                 return $this->getDailyData();
@@ -97,7 +119,7 @@ class DashboardAdminController extends Controller
             $data[] = [
                 'label' => $date->format('d M'),
                 'fullLabel' => $date->format('d M Y'),
-                'revenue' => $transactions->sum('total'),
+                'revenue' => (float) $transactions->sum('total'),
                 'transactions' => $transactions->count(),
             ];
         }
@@ -116,7 +138,7 @@ class DashboardAdminController extends Controller
             $data[] = [
                 'label' => 'W' . $startOfWeek->weekOfYear,
                 'fullLabel' => $startOfWeek->format('d M') . ' - ' . $endOfWeek->format('d M Y'),
-                'revenue' => $transactions->sum('total'),
+                'revenue' => (float) $transactions->sum('total'),
                 'transactions' => $transactions->count(),
             ];
         }
@@ -128,15 +150,15 @@ class DashboardAdminController extends Controller
         $data = [];
         for ($i = 11; $i >= 0; $i--) {
             $date = Carbon::today()->subMonths($i);
-            $startOfMonth = $date->startOfMonth()->copy();
-            $endOfMonth = $date->endOfMonth()->copy();
+            $startOfMonth = $date->copy()->startOfMonth();
+            $endOfMonth = $date->copy()->endOfMonth();
 
             $transactions = Transaction::whereBetween('created_at', [$startOfMonth, $endOfMonth])->get();
 
             $data[] = [
                 'label' => $date->format('M Y'),
                 'fullLabel' => $date->format('F Y'),
-                'revenue' => $transactions->sum('total'),
+                'revenue' => (float) $transactions->sum('total'),
                 'transactions' => $transactions->count(),
             ];
         }
@@ -154,9 +176,9 @@ class DashboardAdminController extends Controller
             $transactions = Transaction::whereBetween('created_at', [$startOfYear, $endOfYear])->get();
 
             $data[] = [
-                'label' => (string)$year,
+                'label' => (string) $year,
                 'fullLabel' => 'Tahun ' . $year,
-                'revenue' => $transactions->sum('total'),
+                'revenue' => (float) $transactions->sum('total'),
                 'transactions' => $transactions->count(),
             ];
         }
