@@ -1,206 +1,296 @@
 <script setup>
+import { ref, computed } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import { computed } from 'vue';
+import ToastNotification from '@/Components/ToastNotification.vue';
 
-// Props dari Laravel Controller
 const props = defineProps({
-    cartItems: Array,
-    totalTagihan: String,
+    cartItems: { type: Array, default: () => [] },
+    totalTagihan: { type: String, default: 'Rp 0' },
+    totalTagihanRaw: { type: [Number, String], default: 0 },
+    cartItemsCount: { type: Number, default: 0 },
 });
 
-// Helper untuk format harga (string/number)
-const toNumber = (v) => (typeof v === 'number' ? v : Number(v || 0));
-const formatPrice = (price) => `Rp ${toNumber(price).toLocaleString('id-ID')}`;
-
-// Subtotal per item
-const getSubTotal = (item) => {
-    return formatPrice(item.price * item.quantity);
+const formatCurrency = (val) => {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        maximumFractionDigits: 0,
+    }).format(val || 0);
 };
 
-//Update jumlah item 
-const updateQuantity = (item, newQty) => {
-    if (newQty < 1) return;
-    router.patch(route('cart.items.update', item.id), { quantity: newQty }, {
-        preserveScroll: true,
-    });
+const updateQuantity = (item, delta) => {
+    const newQty = item.quantity + delta;
+    if (newQty < 1) {
+        removeItem(item.id);
+    } else {
+        router.patch(
+            route('cart.items.update', item.id),
+            { quantity: newQty },
+            { preserveScroll: true }
+        );
+    }
 };
 
-// Hapus item 
 const removeItem = (id) => {
-    if (confirm('Apakah kamu yakin ingin menghapus produk ini dari keranjang?')) {
+    if (confirm('Hapus produk ini dari keranjang?')) {
         router.delete(route('cart.items.destroy', id), {
             preserveScroll: true,
         });
     }
 };
 
-// Checkout
-const checkout = () => {
-    if (confirm('Lanjutkan ke pembayaran?')) {
-        router.post(route('cart.checkout'), {}, {
-            preserveScroll: true,
-        });
-    }
+// Payment Modal State
+const showPaymentModal = ref(false);
+const paymentMethod = ref('cash');
+const cashAmount = ref('');
+const notes = ref('');
+const checkoutProcessing = ref(false);
+
+const rawTotal = computed(() => parseFloat(props.totalTagihanRaw) || 0);
+const parsedCash = computed(() => parseFloat(cashAmount.value) || 0);
+
+const changeAmount = computed(() => {
+    if (paymentMethod.value !== 'cash') return 0;
+    return Math.max(0, parsedCash.value - rawTotal.value);
+});
+
+const isCashEnough = computed(() => {
+    if (paymentMethod.value !== 'cash') return true;
+    return parsedCash.value >= rawTotal.value;
+});
+
+const openPayment = () => {
+    if (!props.cartItems.length) return;
+    cashAmount.value = rawTotal.value.toString();
+    paymentMethod.value = 'cash';
+    notes.value = '';
+    showPaymentModal.value = true;
 };
 
+const setQuickCash = (amount) => {
+    cashAmount.value = amount.toString();
+};
+
+const submitCheckout = () => {
+    if (!isCashEnough.value && paymentMethod.value === 'cash') return;
+
+    checkoutProcessing.value = true;
+    router.post(
+        route('cart.checkout'),
+        {
+            payment_method: paymentMethod.value,
+            pay_amount: paymentMethod.value === 'cash' ? parsedCash.value : rawTotal.value,
+            notes: notes.value,
+        },
+        {
+            onSuccess: () => {
+                showPaymentModal.value = false;
+            },
+            onFinish: () => {
+                checkoutProcessing.value = false;
+            },
+        }
+    );
+};
 </script>
 
 <template>
+    <Head title="Keranjang Belanja - Mas POS" />
 
-    <Head title="Keranjang" />
+    <div class="min-h-screen bg-slate-100 flex flex-col font-sans">
+        <ToastNotification />
 
-    <div class="p-6 bg-gray-100 min-h-screen">
         <!-- Header -->
-        <header class="bg-white shadow rounded-lg p-6 mb-6">
-            <div class="flex items-center justify-between pb-4 border-b border-gray-300">
-                <h1>
-                    <Link :href="route('home')" class="text-xl font-extrabold text-blue-600 hover:opacity-80">
-                    MASPOS
-                    </Link>
-                </h1>
-
-                <div class="flex items-center gap-3">
-                    <Link :href="route('categories.create')"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
-                    + Tambah Kategori
-                    </Link>
-                    <Link :href="route('products.create')"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
-                    + Tambah Produk
-                    </Link>
-
-                    <div class="flex items-center divide-x-2 divide-gray-300">
-                        <div class="inline-flex items-center pr-4">
-                            <Link :href="route('cart')" aria-label="Keranjang"
-                                class="relative z-10 px-4 py-2 bg-blue-600 text-white rounded-l-lg hover:bg-blue-700 transition flex items-center justify-center shadow-md">
-                            <span
-                                class="absolute -top-2 -right-1 bg-green-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
-                                {{ cartItems.length }}
-                            </span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" class="h-5 w-5">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
-                            </svg>
-                            </Link>
-                            <div class="px-4 py-2 bg-blue-50 text-blue-700 rounded-r-lg text-sm font-semibold">
-                                Total Tagihan {{ totalTagihan }}
-                            </div>
-                        </div>
-
-                        
-                        <!-- Avatar -->
-                        <div class="pl-4">
-                            <Dropdown align="right" width="48">
-                                <template #trigger="{ open }">
-                                    <button type="button"
-                                        class="inline-flex items-center gap-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
-                                        aria-label="Menu profil" :aria-expanded="open">
-                                        <img src="/PepperoniChesse.png" alt="User"
-                                            class="w-10 h-10 rounded-full object-cover" />
-                                        <span
-                                            class="text-sm font-medium text-gray-800 max-w-[140px] truncate hidden sm:block">
-                                            {{ $page.props.auth?.user?.name || 'User' }}
-                                        </span>
-                                        <svg class="text-gray-500" xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 20 20" fill="currentColor"
-                                            :class="['h-4 w-4 transition-transform duration-200', open ? 'rotate-180' : '']">
-                                            <path fill-rule="evenodd"
-                                                d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
-                                </template>
-
-                                <template #content>
-                                    <DropdownLink :href="route('profile.edit')">
-                                        Edit Profile
-                                    </DropdownLink>
-                                    <DropdownLink :href="route('logout')" method="post" as="button">
-                                        Log Out
-                                    </DropdownLink>
-                                </template>
-                            </Dropdown>
-                        </div>
-                    </div>
+        <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between">
+            <Link :href="route('pos.index')" class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white font-black flex items-center justify-center">
+                    P
                 </div>
-            </div>
+                <span class="font-extrabold text-base text-slate-900">Mas POS &bull; Keranjang</span>
+            </Link>
+            <Link
+                :href="route('pos.index')"
+                class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition"
+            >
+                &larr; Kembali ke Kasir
+            </Link>
         </header>
 
-        <!-- Cart Table -->
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <table class="w-full">
-                <thead class="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Produk</th>
-                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Harga</th>
-                        <th class="px-6 py-4 text-center text-sm font-semibold text-gray-700">Jumlah</th>
-                        <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Sub Total</th>
-                        <th class="px-6 py-4"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="item in cartItems" :key="item.id" class="border-b border-gray-200 hover:bg-gray-50">
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-4">
-                                <img :src="(item.product && (item.product.image_url || item.product.image)) || '/PepperoniChesse.png'"
-                                    :alt="item.product ? item.product.name : 'Produk'"
-                                    class="w-20 h-20 rounded-lg object-cover" />
-                                <span class="text-sm font-medium text-gray-800">{{ item.product ? item.product.name :
-                                    'Produk'
-                                }}</span>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="text-sm text-gray-800">{{ formatPrice(item.price) }}</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center justify-center gap-3">
-                                <button @click="updateQuantity(item, item.quantity - 1)"
-                                    class="w-8 h-8 flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 transition text-gray-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20"
-                                        fill="currentColor">
-                                        <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                                <span class="text-sm font-medium text-gray-800 w-8 text-center">{{ item.quantity
-                                }}</span>
-                                <button @click="updateQuantity(item, item.quantity + 1)"
-                                    class="w-8 h-8 flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 transition text-gray-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20"
-                                        fill="currentColor">
-                                        <path fill-rule="evenodd"
-                                            d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="text-sm font-medium text-gray-800">{{ getSubTotal(item) }}</span>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <button @click="removeItem(item.id)"
-                                class="text-red-500 hover:text-red-700 text-sm font-medium transition">
-                                Hapus
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- Body -->
+        <main class="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-8 space-y-6">
+            <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                    <div>
+                        <h2 class="text-lg font-black text-slate-900">Daftar Item Pesanan</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">{{ cartItemsCount }} item dalam keranjang</p>
+                    </div>
+                    <span class="text-xl font-black text-emerald-600">{{ totalTagihan }}</span>
+                </div>
 
-            <div class="px-6 py-4 bg-gray-50 flex items-center justify-end gap-3 border-t border-gray-200">
-                <Link :href="route('home')"
-                    class="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-100 transition">
-                Kembali
-                </Link>
-                <button @click="checkout"
-                    class="px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
-                    Bayar
-                </button>
+                <div class="mt-4 divide-y divide-slate-100">
+                    <div
+                        v-for="item in cartItems"
+                        :key="item.id"
+                        class="py-4 flex items-center justify-between gap-4"
+                    >
+                        <div class="min-w-0 flex-1">
+                            <h4 class="font-bold text-sm text-slate-900">{{ item.product?.name }}</h4>
+                            <p class="text-xs text-slate-400">{{ formatCurrency(item.price) }} / unit</p>
+                        </div>
+
+                        <!-- Stepper -->
+                        <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl p-1">
+                            <button
+                                @click="updateQuantity(item, -1)"
+                                class="w-7 h-7 rounded-lg bg-white text-slate-700 hover:bg-slate-200 font-bold flex items-center justify-center text-xs shadow-sm"
+                            >
+                                -
+                            </button>
+                            <span class="w-8 text-center font-black text-xs text-slate-900">{{ item.quantity }}</span>
+                            <button
+                                @click="updateQuantity(item, 1)"
+                                :disabled="item.quantity >= item.product?.stock"
+                                class="w-7 h-7 rounded-lg bg-white text-slate-700 hover:bg-slate-200 font-bold flex items-center justify-center text-xs shadow-sm disabled:opacity-30"
+                            >
+                                +
+                            </button>
+                        </div>
+
+                        <div class="w-28 text-right font-black text-sm text-slate-900">
+                            {{ formatCurrency(item.subtotal) }}
+                        </div>
+
+                        <button
+                            @click="removeItem(item.id)"
+                            class="p-2 text-slate-400 hover:text-rose-600 transition"
+                        >
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div v-if="!cartItems.length" class="py-16 text-center text-slate-400 text-xs">
+                        Keranjang belanja Anda masih kosong.
+                    </div>
+                </div>
+
+                <!-- Footer Checkout -->
+                <div v-if="cartItems.length" class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-400">Total Tagihan:</p>
+                        <p class="text-2xl font-black text-slate-900">{{ totalTagihan }}</p>
+                    </div>
+                    <button
+                        @click="openPayment"
+                        class="px-8 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-lg shadow-emerald-600/30 transition"
+                    >
+                        Lanjut ke Pembayaran &rarr;
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Payment Modal -->
+        <div v-if="showPaymentModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
+            <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 my-8">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                    <h3 class="font-extrabold text-base text-slate-900">Pembayaran Kasir</h3>
+                    <button @click="showPaymentModal = false" class="text-slate-400 hover:text-slate-600">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="my-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-center">
+                    <p class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Total yang Harus Dibayar</p>
+                    <h2 class="text-3xl font-black text-emerald-700 mt-1">{{ totalTagihan }}</h2>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 p-1 bg-slate-100 rounded-2xl mb-4 text-xs font-bold">
+                    <button
+                        type="button"
+                        @click="paymentMethod = 'cash'"
+                        class="py-2.5 rounded-xl transition"
+                        :class="paymentMethod === 'cash' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'"
+                    >
+                        💵 Tunai
+                    </button>
+                    <button
+                        type="button"
+                        @click="paymentMethod = 'qris'"
+                        class="py-2.5 rounded-xl transition"
+                        :class="paymentMethod === 'qris' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'"
+                    >
+                        📱 QRIS
+                    </button>
+                    <button
+                        type="button"
+                        @click="paymentMethod = 'transfer'"
+                        class="py-2.5 rounded-xl transition"
+                        :class="paymentMethod === 'transfer' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'"
+                    >
+                        💳 Transfer
+                    </button>
+                </div>
+
+                <div v-if="paymentMethod === 'cash'" class="space-y-3 text-xs">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Nominal Uang Diterima (Rp)</label>
+                        <input
+                            v-model="cashAmount"
+                            type="number"
+                            min="0"
+                            class="w-full py-2.5 px-3 text-base font-black rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                        />
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" @click="setQuickCash(rawTotal)" class="py-2 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-slate-700">Uang Pas</button>
+                        <button type="button" @click="setQuickCash(50000)" class="py-2 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-slate-700">50.000</button>
+                        <button type="button" @click="setQuickCash(100000)" class="py-2 rounded-xl bg-slate-100 hover:bg-slate-200 font-bold text-slate-700">100.000</button>
+                    </div>
+
+                    <div
+                        class="p-3.5 rounded-2xl flex items-center justify-between font-bold"
+                        :class="isCashEnough ? 'bg-emerald-50 text-emerald-900 border border-emerald-200' : 'bg-rose-50 text-rose-900 border border-rose-200'"
+                    >
+                        <span>{{ isCashEnough ? 'Kembalian:' : 'Uang Kurang:' }}</span>
+                        <span class="text-base font-black">
+                            {{ formatCurrency(isCashEnough ? changeAmount : (rawTotal - parsedCash)) }}
+                        </span>
+                    </div>
+                </div>
+
+                <div v-else-if="paymentMethod === 'qris'" class="p-4 bg-slate-50 rounded-2xl text-center space-y-2 text-xs border border-slate-200">
+                    <p class="font-bold text-slate-800">Scan QRIS Mas POS</p>
+                    <div class="w-32 h-32 bg-white p-2 rounded-2xl mx-auto shadow-sm border border-slate-200 flex items-center justify-center">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=MASPOS-PAYMENT-MOCK" alt="QRIS" class="w-full h-full object-contain" />
+                    </div>
+                </div>
+
+                <div v-else class="p-4 bg-slate-50 rounded-2xl text-xs border border-slate-200">
+                    <p class="font-bold text-slate-800">BCA: 887-092-1234 (MAS POS RETAIL)</p>
+                </div>
+
+                <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-end gap-2">
+                    <button
+                        type="button"
+                        @click="showPaymentModal = false"
+                        class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+                    >
+                        Batal
+                    </button>
+                    <button
+                        type="button"
+                        @click="submitCheckout"
+                        :disabled="checkoutProcessing || (!isCashEnough && paymentMethod === 'cash')"
+                        class="px-6 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md disabled:opacity-50"
+                    >
+                        {{ checkoutProcessing ? 'Memproses...' : 'Selesaikan Transaksi &rarr;' }}
+                    </button>
+                </div>
             </div>
         </div>
     </div>

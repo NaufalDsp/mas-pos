@@ -16,39 +16,48 @@ class HomeController extends Controller
         $search = $request->input('search');
         $categoryId = $request->input('category_id');
 
-        $query = Product::with('category');
+        $query = Product::with('category')->latest();
 
         if ($search) {
-            $query->where('name', 'like', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('sku', 'like', "%{$search}%");
+            });
         }
 
         if ($categoryId) {
             $query->where('category_id', $categoryId);
         }
 
-        $products = $query->get(); // image_url otomatis included
-
-        $categories = Category::all();
+        $products = $query->get();
+        $categories = Category::withCount('products')->orderBy('name')->get();
 
         $cart = null;
         $totalTagihan = 0;
         $cartItemsCount = 0;
+        $cartItems = [];
 
         if (Auth::check()) {
-            $cart = Cart::with(['items.product'])->firstOrCreate([
+            $cart = Cart::with(['items.product.category'])->firstOrCreate([
                 'user_id' => Auth::id()
             ]);
 
-            $totalTagihan = $cart->total;
-            $cartItemsCount = $cart->items->sum('quantity');
+            $totalTagihan = (float) $cart->total;
+            $cartItemsCount = (int) $cart->items->sum('quantity');
+            $cartItems = $cart->items;
         }
 
         return Inertia::render('HomePage', [
             'products' => $products,
             'categories' => $categories,
-            'cart_total_formatted' => 'Rp ' . number_format($totalTagihan, 0, ',', '.'),
+            'cartItems' => $cartItems,
             'cart_total' => $totalTagihan,
+            'cart_total_formatted' => 'Rp ' . number_format($totalTagihan, 0, ',', '.'),
             'cart_count' => $cartItemsCount,
+            'filters' => [
+                'search' => $search,
+                'category_id' => $categoryId,
+            ],
         ]);
     }
 }

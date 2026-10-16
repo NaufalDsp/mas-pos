@@ -1,146 +1,140 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import { ref } from 'vue';
 
 const props = defineProps({
     transaction: Object,
-    totalTagihan: String,
-    cartItemsCount: Number,
 });
 
-const cartItems = ref([]);
+const printReceipt = () => {
+    window.print();
+};
 </script>
+
 <template>
-    <Head title="Pembayaran Sukses" />
-    <div class="p-6 bg-gray-100 min-h-screen">
-        <!-- Header -->
-        <header class="bg-white shadow rounded-lg p-6 mb-6">
-            <div class="flex items-center justify-between pb-4 border-b border-gray-300">
-                <h1>
-                    <Link :href="route('home')" class="text-xl font-extrabold text-blue-600 hover:opacity-80">
-                        MASPOS
-                    </Link>
-                </h1>
-                <div class="flex items-center gap-3">
-                    <Link :href="route('categories.create')"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
-                        + Tambah Kategori
-                    </Link>
-                    <Link :href="route('products.create')"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
-                        + Tambah Produk
-                    </Link>
+    <Head title="Transaksi Berhasil - Mas POS" />
 
-                    <div class="flex items-center divide-x-2 divide-gray-300">
-                        <div class="inline-flex items-center pr-4">
-                            <Link :href="route('cart')" aria-label="Keranjang"
-                                class="relative z-10 px-4 py-2 bg-blue-600 text-white rounded-l-lg hover:bg-blue-700 transition flex items-center justify-center shadow-md">
-                                <span
-                                    class="absolute -top-2 -right-1 bg-green-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
-                                    {{ cartItemsCount || 0 }}
-                                </span>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                    stroke="currentColor" class="h-5 w-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
-                                </svg>
-                            </Link>
-                            <div
-                                class="px-4 py-2 bg-blue-50 text-blue-700 rounded-r-lg text-sm font-semibold whitespace-nowrap">
-                                Total Tagihan {{ totalTagihan || 'Rp 0' }}
-                            </div>
-                        </div>
-
-                        <div class="pl-4">
-                            <Dropdown align="right" width="48">
-                                <template #trigger="{ open }">
-                                    <button type="button"
-                                        class="inline-flex items-center gap-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
-                                        :aria-expanded="open">
-                                        <img src="/PepperoniChesse.png" alt="User"
-                                            class="w-10 h-10 rounded-full object-cover" />
-                                        <span
-                                            class="text-sm font-medium text-gray-800 max-w-[140px] truncate hidden sm:block">
-                                            {{ $page.props.auth?.user?.name || 'User' }}
-                                        </span>
-                                        <svg class="h-4 w-4 text-gray-500 transition-transform duration-200"
-                                            xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-                                            :class="open ? 'rotate-180' : ''" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
-                                </template>
-
-                                <template #content>
-                                    <DropdownLink :href="route('profile.edit')">Edit Profile</DropdownLink>
-                                    <DropdownLink :href="route('logout')" method="post" as="button">Log Out
-                                    </DropdownLink>
-                                </template>
-                            </Dropdown>
-                        </div>
-                    </div>
+    <div class="min-h-screen bg-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 print:bg-white print:p-0">
+        <div class="max-w-md w-full space-y-4">
+            <!-- Success Top Banner (Hidden in print) -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 text-center print:hidden">
+                <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <h1 class="text-xl font-extrabold text-slate-900 mt-3">Pembayaran Berhasil!</h1>
+                <p class="text-xs text-slate-500 mt-1">Transaksi telah tersimpan dan stok produk otomatis dipotong.</p>
+                <div class="mt-4 flex items-center justify-center gap-3">
+                    <Link
+                        :href="route('pos.index')"
+                        class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-md transition"
+                    >
+                        &larr; Transaksi Baru
+                    </Link>
+                    <button
+                        @click="printReceipt"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition"
+                    >
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        <span>Cetak Struk (Print)</span>
+                    </button>
                 </div>
             </div>
-        </header>
 
-        <!-- Success Content -->
-        <div class="flex items-center justify-center py-12">
-            <div class="max-w-md w-full">
-                <!-- Success Card -->
-                <div class="bg-white rounded-2xl p-6 text-center">
-                    <div class="mb-2 relative flex items-center justify-center">
-                        <div class="relative">
-                            <img src="/Sucess.png" alt="Success" class="w-40 h-40 object-contain" />
-                        </div>
-                    </div>
-
-                    <!-- Success Message -->
-                    <h1 class="text-2xl font-bold text-green-600 mb-2">Pembayaran Sukses</h1>
-                    <p class="text-gray-600 mb-4">Transaksi Anda telah berhasil diproses</p>
-
-                    <!-- Transaction Details -->
-                    <div class="bg-gray-50 rounded-2xl p-6 mb-1 text-center">
-                        <div class="mb-4">
-                            <div class="text-sm text-gray-400 mb-1">Total</div>
-                            <div class="text-xl font-bold text-gray-900">{{ transaction.total_formatted }}</div>
-                        </div>
-                        <div>
-                            <div class="text-gray-400 font-medium">{{ transaction.date }}</div>
-                        </div>
-                    </div>
-
-                    <!-- Action Button -->
-                    <Link :href="route('home')"
-                        class="inline-flex items-center justify-center w-full px-4 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-[1.0] shadow-lg">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg>
-                        Kembali
-                    </Link>
-
-                    <!-- Transaction ID -->
-                    <p class="mt-6 text-xs text-gray-400">
-                        ID Transaksi: #{{ transaction.id }}
-                    </p>
+            <!-- Thermal Struk Receipt Card -->
+            <div id="thermal-receipt-card" class="bg-white rounded-2xl p-6 shadow-md border border-slate-200/80 font-mono text-xs text-slate-800 print:shadow-none print:border-none print:p-0 print:m-0">
+                <!-- Store Info -->
+                <div class="text-center pb-4 border-b border-dashed border-slate-300">
+                    <h2 class="font-black text-base tracking-widest text-slate-900 uppercase">MAS POS RETAIL</h2>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Jl. Raya Pusat Bisnis No. 88</p>
+                    <p class="text-[11px] text-slate-500">Telp: (021) 8899-7766</p>
                 </div>
 
-                <!-- Additional Info -->
-                <div class="mt-6 text-center">
-                    <p class="text-sm text-gray-600">
-                        <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        Transaksi telah tercatat di sistem
-                    </p>
+                <!-- Meta Info -->
+                <div class="py-3 border-b border-dashed border-slate-300 space-y-1 text-[11px]">
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">No. Nota:</span>
+                        <span class="font-bold text-slate-900">{{ transaction.invoice_code }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Tanggal:</span>
+                        <span>{{ transaction.date }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Kasir:</span>
+                        <span>{{ transaction.cashier_name }}</span>
+                    </div>
+                    <div v-if="transaction.notes" class="flex justify-between text-indigo-600 font-medium">
+                        <span>Catatan:</span>
+                        <span>{{ transaction.notes }}</span>
+                    </div>
+                </div>
+
+                <!-- Itemized List -->
+                <div class="py-3 border-b border-dashed border-slate-300 space-y-2.5">
+                    <div
+                        v-for="item in transaction.items"
+                        :key="item.id"
+                        class="text-[11px]"
+                    >
+                        <div class="font-bold text-slate-900">{{ item.name }}</div>
+                        <div class="flex justify-between text-slate-500 mt-0.5">
+                            <span>{{ item.quantity }} x {{ item.price_formatted }}</span>
+                            <span class="font-bold text-slate-900">{{ item.subtotal_formatted }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Details -->
+                <div class="py-3 border-b border-dashed border-slate-300 space-y-1.5 text-[11px]">
+                    <div class="flex justify-between font-black text-sm text-slate-900 pt-1">
+                        <span>TOTAL:</span>
+                        <span>{{ transaction.total_formatted }}</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600">
+                        <span>Metode Bayar:</span>
+                        <span class="uppercase font-bold text-slate-800">{{ transaction.payment_method }}</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600">
+                        <span>Uang Diterima:</span>
+                        <span>{{ transaction.pay_amount_formatted }}</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600">
+                        <span>Kembalian:</span>
+                        <span class="font-bold text-slate-900">{{ transaction.change_amount_formatted }}</span>
+                    </div>
+                </div>
+
+                <!-- Receipt Footer -->
+                <div class="pt-4 text-center text-[10px] text-slate-400 space-y-1">
+                    <p class="font-bold text-slate-600 uppercase tracking-widest">TERIMA KASIH ATAS KUNJUNGAN ANDA</p>
+                    <p>Barang yang sudah dibeli tidak dapat ditukar/dikembalikan.</p>
                 </div>
             </div>
         </div>
     </div>
 </template>
+
+<style>
+@media print {
+    body {
+        background: white !important;
+    }
+    body * {
+        visibility: hidden;
+    }
+    #thermal-receipt-card, #thermal-receipt-card * {
+        visibility: visible;
+    }
+    #thermal-receipt-card {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 80mm;
+        margin: 0;
+        padding: 5mm;
+    }
+}
+</style>
