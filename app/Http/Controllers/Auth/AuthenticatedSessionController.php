@@ -83,8 +83,11 @@ class AuthenticatedSessionController extends Controller
         Auth::login($user, $remember);
         $request->session()->regenerate();
 
-        // Arahkan ke HomePage setelah login
-        return redirect()->intended(RouteServiceProvider::HOME);
+        if ($user->role === 'admin') {
+            return redirect()->intended(route('admin.dashboard'));
+        }
+
+        return redirect()->intended(route('home'));
     }
 
     /**

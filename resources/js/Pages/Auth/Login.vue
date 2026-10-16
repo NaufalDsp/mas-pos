@@ -11,6 +11,16 @@ const form = useForm({
 
 const showPassword = ref(false);
 
+const fillAdmin = () => {
+  form.username = 'admin@maspos.com';
+  form.password = 'password';
+};
+
+const fillKasir = () => {
+  form.username = 'kasir@maspos.com';
+  form.password = 'password';
+};
+
 const submit = () => {
   form.post(route('login'), {
     onFinish: () => form.reset('password'),
@@ -20,68 +30,104 @@ const submit = () => {
 
 <template>
   <GuestLayout>
+    <Head title="Login - Mas POS" />
 
-    <Head title="Login" />
-    <h2 class="text-[32px] font-semibold text-gray-900 mb-2">Selamat Datang di MASPOS</h2>
-    <p class="text-[18px] text-gray-900 mb-4">
-      Masuk untuk mengelola bisnis Anda dengan mudah dan efisien.
-      MASPOS menghadirkan solusi point-of-sale terbaik untuk kemudahan operasional sehari-hari.
-    </p>
-
-    <form @submit.prevent="submit" class="space-y-6">
-      <!-- Username -->
+    <div class="space-y-6 max-w-md w-full">
       <div>
-        <input type="text" v-model="form.username" placeholder="Username" autocomplete="username"
-          class="w-full border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 py-2"
-          :class="{ 'border-red-500 focus:border-red-600': form.errors.username }"
-          :aria-invalid="!!form.errors.username" :aria-describedby="form.errors.username ? 'username-error' : null"
-          required />
-        <p v-if="form.errors.username" id="username-error" class="mt-1 text-sm text-red-600">
-          Username yang anda masukkan salah.
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-3">
+          <span>Point of Sale v2.0</span>
+        </div>
+        <h2 class="text-3xl font-black text-slate-900 tracking-tight">Selamat Datang di Mas POS</h2>
+        <p class="text-sm text-slate-500 mt-1">
+          Masuk ke akun Anda untuk mengakses Terminal Kasir atau Dashboard Manajemen Admin.
         </p>
       </div>
 
-      <!-- Password -->
-      <div class="relative">
-        <input :type="showPassword ? 'text' : 'password'" v-model="form.password" placeholder="Password"
-          autocomplete="current-password"
-          class="w-full border-b border-gray-400 bg-transparent focus:outline-none focus:border-blue-500 py-2 pr-10"
-          :class="{ 'border-red-500 focus:border-red-600': form.errors.password }"
-          :aria-invalid="!!form.errors.password" :aria-describedby="form.errors.password ? 'password-error' : null"
-          required />
-        <button type="button" class="absolute right-0 top-1/2 -translate-y-1/2 p-3   text-gray-500 hover:text-gray-700"
-          @click="showPassword = !showPassword"
-          :aria-label="showPassword ? 'Sembunyikan password' : 'Tampilkan password'"
-          :title="showPassword ? 'Sembunyikan password' : 'Tampilkan password'">
-          <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M2.036 12.322a1 1 0 010-.644C3.423 7.51 7.36 5 12 5c4.64 0 8.577 2.51 9.964 6.678a1 1 0 010 .644C20.577 16.49 16.64 19 12 19c-4.64 0-8.577-2.51-9.964-6.678z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M3.98 8.223A10.477 10.477 0 001.934 12C3.32 16.168 7.258 18.678 11.897 18.678c1.74 0 3.392-.36 4.86-1.013M9.88 9.88a3 3 0 104.243 4.243M6.1 6.1l11.8 11.8M12.103 5.322c1.74 0 3.392.36 4.86 1.013a10.478 10.478 0 013.046 3.688" />
-          </svg>
-        </button>
-        <p v-if="form.errors.password" id="password-error" class="mt-1 text-sm text-red-600">
-          Password yang anda masukkan salah.
-        </p>
+      <!-- Quick Demo Login Presets -->
+      <div class="p-3.5 rounded-2xl bg-slate-100/80 border border-slate-200 text-xs space-y-2">
+        <span class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">Demo Akun Siap Pakai:</span>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            @click="fillAdmin"
+            class="flex-1 py-1.5 px-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 font-bold transition text-[11px]"
+          >
+            🛡️ Akun Admin
+          </button>
+          <button
+            type="button"
+            @click="fillKasir"
+            class="flex-1 py-1.5 px-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 font-bold transition text-[11px]"
+          >
+            🛒 Akun Kasir
+          </button>
+        </div>
       </div>
 
-      <!-- Tombol -->
-      <div>
-        <button type="submit"
-          class="w-full py-3 px-4 rounded-lg text-white font-medium bg-gradient-to-r from-blue-500 to-blue-700 hover:opacity-90 transition">
-          Masuk
-        </button>
-      </div>
-      <div class="text-gray-700">
-        Belum punya akun?
-        <Link href="/register" class="text-blue-600 hover:underline ml-1">Daftar di Sini</Link>
-      </div>
-    </form>
+      <form @submit.prevent="submit" class="space-y-4">
+        <!-- Username / Email -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Email atau Username</label>
+          <input
+            type="text"
+            v-model="form.username"
+            placeholder="admin@maspos.com atau kasir@maspos.com"
+            autocomplete="username"
+            class="w-full px-4 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
+            :class="{ 'border-rose-500': form.errors.username }"
+            required
+          />
+          <p v-if="form.errors.username" class="mt-1 text-xs text-rose-500">
+            {{ form.errors.username }}
+          </p>
+        </div>
 
+        <!-- Password -->
+        <div class="relative">
+          <div class="flex items-center justify-between mb-1">
+            <label class="text-xs font-bold text-slate-700">Kata Sandi</label>
+          </div>
+          <div class="relative">
+            <input
+              :type="showPassword ? 'text' : 'password'"
+              v-model="form.password"
+              placeholder="Masukkan kata sandi..."
+              autocomplete="current-password"
+              class="w-full px-4 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition pr-10"
+              :class="{ 'border-rose-500': form.errors.password }"
+              required
+            />
+            <button
+              type="button"
+              class="absolute right-0 top-1/2 -translate-y-1/2 p-2.5 text-slate-400 hover:text-slate-600"
+              @click="showPassword = !showPassword"
+              tabindex="-1"
+            >
+              <svg v-if="!showPassword" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              <svg v-else class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+              </svg>
+            </button>
+          </div>
+          <p v-if="form.errors.password" class="mt-1 text-xs text-rose-500">
+            {{ form.errors.password }}
+          </p>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-2">
+          <button
+            type="submit"
+            :disabled="form.processing"
+            class="w-full py-3 px-4 rounded-xl text-white font-extrabold text-xs bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition disabled:opacity-50"
+          >
+            {{ form.processing ? 'Memverifikasi...' : 'Masuk ke Sistem &rarr;' }}
+          </button>
+        </div>
+      </form>
+    </div>
   </GuestLayout>
 </template>
